@@ -4,29 +4,23 @@ import { SiteFooter, type FooterColumn } from '@/components/site-footer';
 export function Footer() {
   const columns: FooterColumn[] = [
     {
-      title: m['landing.footer.feature'](),
+      title: m['qwen.nav.gallery'](),
       links: [
-        { label: m['hotel.nav.create'](), href: '/#create' },
-        { label: m['hotel.nav.how'](), href: '/#how' },
+        { label: m['qwen.nav.gallery'](), href: '/#gallery' },
+        { label: m['qwen.nav.create'](), href: '/playground' },
       ],
     },
     {
-      title: m['landing.footer.resources'](),
-      links: [
-        {
-          label: 'support@hotel-lobby.org',
-          href: 'mailto:support@hotel-lobby.org',
-        },
-      ],
+      title: m['qwen.nav.sources'](),
+      links: [{ label: m['qwen.nav.sources'](), href: '/#sources' }],
     },
     {
-      title: m['landing.footer.legal'](),
+      title: m['qwen.footer.terms'](),
       links: [
-        { label: m['landing.footer.privacy'](), href: '/privacy-policy' },
-        { label: m['landing.footer.terms'](), href: '/terms-of-service' },
+        { label: m['qwen.footer.privacy'](), href: '/privacy-policy' },
+        { label: m['qwen.footer.terms'](), href: '/terms-of-service' },
       ],
     },
   ];
-
-  return <SiteFooter tagline={m['hotel.footer.line']()} columns={columns} />;
+  return <SiteFooter tagline={m['qwen.footer.note']()} columns={columns} />;
 }

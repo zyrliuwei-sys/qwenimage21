@@ -75,7 +75,7 @@ async function GET({ request }: { request: Request }) {
 
     return respPage(orders, total);
   } catch (error: any) {
-    return respErr(error.message || 'Internal error');
+    return respErr('Internal error');
   }
 }
 
@@ -104,7 +104,7 @@ async function PATCH({ request }: { request: Request }) {
     await db().update(order).set(patch).where(eq(order.orderNo, orderNo));
     return respOk();
   } catch (error: any) {
-    return respErr(error.message || 'Internal error');
+    return respErr('Internal error');
   }
 }
 

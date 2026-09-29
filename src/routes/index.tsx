@@ -3,7 +3,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { envConfigs } from '@/config';
 import { m } from '@/paraglide/messages.js';
 import { getLocale, locales, localizeUrl } from '@/paraglide/runtime.js';
-import { HotelLobbyPage } from '@/blocks/hotel-lobby';
+import { QwenHomePage } from '@/blocks/qwen-home';
 
 export const Route = createFileRoute('/')({
   loader: () => ({ locale: getLocale() }),
@@ -25,11 +25,17 @@ export const Route = createFileRoute('/')({
         { property: 'og:type', content: 'website' },
         {
           property: 'og:image',
-          content: `${envConfigs.app_url}/imgs/generated/hotel-lobby-duet.png`,
+          content: `${envConfigs.app_url}/imgs/qwen/sculptural-arch.jpg`,
         },
         { name: 'twitter:card', content: 'summary_large_image' },
       ],
       links: [
+        {
+          rel: 'preload',
+          as: 'image',
+          href: '/imgs/qwen/atelier-contact-sheet.webp',
+          fetchPriority: 'high',
+        },
         { rel: 'canonical', href: urlFor(locale) },
         ...locales.map((loc) => ({
           rel: 'alternate',
@@ -48,11 +54,11 @@ export const Route = createFileRoute('/')({
             description,
             url: urlFor(locale),
             inLanguage: locale,
-            primaryImageOfPage: `${envConfigs.app_url}/imgs/generated/hotel-lobby-duet.png`,
+            primaryImageOfPage: `${envConfigs.app_url}/imgs/qwen/sculptural-arch.jpg`,
           }),
         },
       ],
     };
   },
-  component: HotelLobbyPage,
+  component: QwenHomePage,
 });

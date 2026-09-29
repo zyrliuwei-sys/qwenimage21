@@ -1,0 +1,26 @@
+export const meta = {
+  title: 'Plan an image edit around what should stay',
+  description:
+    'A practical framework for describing edits while protecting the subject, composition and mood you want to preserve.',
+  created_at: '2026-09-25',
+  author_name: 'QwenImage AI Studio',
+  image: '/imgs/qwen/glass-ribbon.webp',
+};
+
+When editing an existing image, the most useful instruction is often what must remain. A reference image already contains decisions about subject, framing and atmosphere. Name those decisions before asking for a change.
+
+## Identify the anchor
+
+Choose two or three features that make the original recognizable. For a portrait, those might be the subject's expression, camera angle and silhouette. For a product photograph, it might be the object shape, label placement and viewpoint.
+
+## Describe one change at a time
+
+An edit request becomes easier to reason about when it names the specific area and desired result: “Replace the background with a pale stone wall, keeping the person and the soft window light.” Broad requests such as “make it more premium” do not reveal which visual decision should change.
+
+## Check for conflicts
+
+Ask whether the requested change affects something you wanted to preserve. Moving from indoor window light to a sunset beach scene, for example, changes both the setting and the lighting logic. Decide which one has priority before you prepare the prompt.
+
+## Keep the reference local while drafting
+
+The editing mode in the [QwenImage AI studio](/playground) previews a selected image in your browser tab and helps you prepare a copyable instruction. The current studio does not upload that image or perform the edit itself.

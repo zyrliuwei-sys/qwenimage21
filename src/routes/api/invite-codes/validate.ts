@@ -24,7 +24,7 @@ async function POST({ request }: { request: Request }) {
     return respData({ valid: true, trialDays: result.trialDays });
   } catch (e: any) {
     console.log('validate invite code failed:', e);
-    return respErr(e?.message || 'Validation failed');
+    return respErr('Validation failed');
   }
 }
 

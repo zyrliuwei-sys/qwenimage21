@@ -23,7 +23,7 @@ async function POST({ request }: { request: Request }) {
     await assignRoleToUser(userId, roleId);
     return respOk();
   } catch (error: any) {
-    return respErr(error.message || 'Internal error');
+    return respErr('Internal error');
   }
 }
 
@@ -44,7 +44,7 @@ async function DELETE({ request }: { request: Request }) {
     await removeRoleFromUser(userId, roleId);
     return respOk();
   } catch (error: any) {
-    return respErr(error.message || 'Internal error');
+    return respErr('Internal error');
   }
 }
 

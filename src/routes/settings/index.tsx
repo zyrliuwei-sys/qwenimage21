@@ -1,17 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { Activity, CreditCard, Key, TrendingUp } from 'lucide-react';
+import { ArrowUpRight, Coins, CreditCard, KeyRound } from 'lucide-react';
 
 import { useSession } from '@/core/auth/client';
+import { Link } from '@/core/i18n/navigation';
 import { apiGet } from '@/lib/api-client';
 import { m } from '@/paraglide/messages.js';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 
 type Subscription = {
   status: string;
@@ -21,7 +15,6 @@ type Subscription = {
 
 function DashboardPage() {
   const { data: session } = useSession();
-
   const { data: creditsData } = useQuery({
     queryKey: ['user-credits'],
     queryFn: () => apiGet<{ balance: number }>('/api/credits'),
@@ -35,106 +28,69 @@ function DashboardPage() {
     queryFn: () =>
       apiGet<Subscription | null>('/api/user/subscriptions/current'),
   });
-
-  const credits = creditsData?.balance ?? null;
-  const apiKeys = apiKeysData?.length ?? null;
-  const subscription = subscriptionData ?? null;
-
   const planLabel =
-    subscription?.planName ||
-    subscription?.productName ||
+    subscriptionData?.planName ||
+    subscriptionData?.productName ||
     m['settings.overview.plan_free']();
 
   return (
-    <div className="space-y-6 p-4 md:p-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">
-          {m['settings.title']()}
-        </h1>
-        <p className="text-muted-foreground mt-1 text-sm">
-          {m['settings.welcome']({
-            name: session?.user?.name || session?.user?.email || '',
-          })}
-        </p>
+    <div className="qw-dashboard">
+      <section className="qw-dashboard-hero">
+        <div className="qw-dashboard-intro">
+          <p className="qw-dashboard-eyebrow">
+            {m['qwen.dashboard.eyebrow']()}
+          </p>
+          <h1>{m['qwen.dashboard.heading']()}</h1>
+          <p>{m['qwen.dashboard.description']()}</p>
+          <Link href="/playground" className="qw-dashboard-primary">
+            {m['qwen.dashboard.action']()} <ArrowUpRight size={18} />
+          </Link>
+        </div>
+        <div
+          className="qw-dashboard-art"
+          role="img"
+          aria-label={m['qwen.art.paper']()}
+        />
+      </section>
+
+      <div className="qw-dashboard-section-heading">
+        <div>
+          <h2>{m['qwen.dashboard.account']()}</h2>
+          <p>{m['qwen.dashboard.account_note']()}</p>
+        </div>
+        <span>{session?.user?.name || session?.user?.email || ''}</span>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
-              {m['settings.overview.plan']()}
-            </CardTitle>
-            <TrendingUp className="text-muted-foreground size-4" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{planLabel}</div>
-            <p className="text-muted-foreground mt-1 text-xs">
-              {m['settings.overview.plan_description']()}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
-              {m['settings.credits.title']()}
-            </CardTitle>
-            <CreditCard className="text-muted-foreground size-4" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{credits ?? '—'}</div>
-            <p className="text-muted-foreground mt-1 text-xs">
-              {m['settings.credits.description']()}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
-              {m['settings.apikeys.title']()}
-            </CardTitle>
-            <Key className="text-muted-foreground size-4" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{apiKeys ?? '—'}</div>
-            <p className="text-muted-foreground mt-1 text-xs">
-              {m['settings.overview.apikeys_description']()}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
-              {m['settings.overview.usage']()}
-            </CardTitle>
-            <Activity className="text-muted-foreground size-4" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">0</div>
-            <p className="text-muted-foreground mt-1 text-xs">
-              {m['settings.overview.usage_description']()}
-            </p>
-          </CardContent>
-        </Card>
+      <div className="qw-dashboard-stats">
+        <Link href="/settings/billing" className="qw-dashboard-stat">
+          <CreditCard size={20} />
+          <span>{m['settings.overview.plan']()}</span>
+          <strong>{planLabel}</strong>
+          <ArrowUpRight size={17} className="qw-dashboard-arrow" />
+        </Link>
+        <Link href="/settings/credits" className="qw-dashboard-stat">
+          <Coins size={20} />
+          <span>{m['settings.credits.title']()}</span>
+          <strong>{creditsData?.balance ?? '…'}</strong>
+          <ArrowUpRight size={17} className="qw-dashboard-arrow" />
+        </Link>
+        <Link href="/settings/apikeys" className="qw-dashboard-stat">
+          <KeyRound size={20} />
+          <span>{m['settings.apikeys.title']()}</span>
+          <strong>{apiKeysData?.length ?? '…'}</strong>
+          <ArrowUpRight size={17} className="qw-dashboard-arrow" />
+        </Link>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">
-            {m['settings.overview.getting_started']()}
-          </CardTitle>
-          <CardDescription>
-            {m['settings.overview.getting_started_description']()}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="border-border text-muted-foreground rounded-lg border border-dashed p-8 text-center">
-            <p className="text-sm">{m['settings.placeholder']()}</p>
-          </div>
-        </CardContent>
-      </Card>
+      <section className="qw-dashboard-next">
+        <div>
+          <h2>{m['qwen.dashboard.next']()}</h2>
+          <p>{m['qwen.dashboard.next_note']()}</p>
+        </div>
+        <Link href="/playground">
+          {m['qwen.dashboard.action']()} <ArrowUpRight size={18} />
+        </Link>
+      </section>
     </div>
   );
 }

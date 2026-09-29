@@ -59,6 +59,10 @@ export function staticPageRouteOptions(slug: string) {
         meta: [
           { title: meta.title },
           { name: 'description', content: meta.description },
+          { property: 'og:title', content: meta.title },
+          { property: 'og:description', content: meta.description },
+          { property: 'og:type', content: 'website' },
+          { name: 'twitter:card', content: 'summary' },
         ],
         links: [
           { rel: 'canonical', href: canonical },

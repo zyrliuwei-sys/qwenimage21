@@ -13,3 +13,5 @@ overrides:
   js-yaml: 4.3.2
   postcss: 8.5.23
   browserslist: 4.28.7
+  '@babel/core': 7.29.7
+  '@esbuild-kit/core-utils>esbuild': 0.25.12

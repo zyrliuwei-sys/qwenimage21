@@ -65,7 +65,7 @@ async function GET({ request }: { request: Request }) {
 
     return respPage(withCredits, total);
   } catch (error: any) {
-    return respErr(error.message || 'Internal error');
+    return respErr('Internal error');
   }
 }
 

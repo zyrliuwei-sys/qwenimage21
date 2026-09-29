@@ -133,7 +133,7 @@ export function AppLayout({
   }
 
   return (
-    <SidebarProvider>
+    <SidebarProvider className="qw-app-shell">
       <AppSidebar
         brand={brand}
         brandHref={brandHref}

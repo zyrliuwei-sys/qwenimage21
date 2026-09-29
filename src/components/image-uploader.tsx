@@ -479,6 +479,8 @@ export function ImageUploader({
               <img
                 src={item.preview}
                 alt="Preview"
+                width={128}
+                height={128}
                 className="h-32 w-32 rounded-lg object-cover"
               />
               {item.size && (

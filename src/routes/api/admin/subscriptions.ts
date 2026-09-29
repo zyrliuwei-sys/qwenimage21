@@ -63,7 +63,7 @@ async function GET({ request }: { request: Request }) {
 
     return respPage(subscriptions, total);
   } catch (error: any) {
-    return respErr(error.message || 'Internal error');
+    return respErr('Internal error');
   }
 }
 

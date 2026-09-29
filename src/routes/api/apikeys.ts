@@ -29,7 +29,7 @@ async function GET({ request }: { request: Request }) {
     );
     return respPage(items, total);
   } catch (error: any) {
-    return respErr(error.message || 'Failed to list API keys');
+    return respErr('Failed to list API keys');
   }
 }
 
@@ -56,7 +56,7 @@ async function POST({ request }: { request: Request }) {
 
     return respData(key);
   } catch (error: any) {
-    return respErr(error.message || 'Failed to create API key');
+    return respErr('Failed to create API key');
   }
 }
 
@@ -79,7 +79,7 @@ async function DELETE({ request }: { request: Request }) {
     await apikeys.remove({ userId: session.user.id, keyId });
     return respOk();
   } catch (error: any) {
-    return respErr(error.message || 'Failed to delete API key');
+    return respErr('Failed to delete API key');
   }
 }
 

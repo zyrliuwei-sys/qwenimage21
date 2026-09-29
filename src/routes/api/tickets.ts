@@ -36,7 +36,7 @@ async function GET({ request }: { request: Request }) {
     });
     return respPage(items, total);
   } catch (error: any) {
-    return respErr(error.message || 'Internal error');
+    return respErr('Internal error');
   }
 }
 
@@ -72,7 +72,7 @@ async function POST({ request }: { request: Request }) {
     });
     return respData(row);
   } catch (error: any) {
-    return respErr(error.message || 'Internal error');
+    return respErr('Internal error');
   }
 }
 

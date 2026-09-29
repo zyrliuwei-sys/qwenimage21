@@ -17,21 +17,19 @@ export const Route = createFileRoute('/blog/')({
   },
   head: ({ loaderData }) => {
     const locale = loaderData?.locale;
-    const hasPublishedPosts = loaderData?.posts.some(
-      (post) => post.source === 'db'
-    );
+    const title = m['blog.meta_title']({}, { locale: locale as any });
+    const description = m['blog.description']({}, { locale: locale as any });
     const urlFor = (loc: string) =>
       localizeUrl(`${envConfigs.app_url}/blog`, { locale: loc as any }).href;
     return {
       meta: [
-        {
-          title: `${m['blog.title']({}, { locale: locale as any })} | ${envConfigs.app_name}`,
-        },
-        {
-          name: 'description',
-          content: m['blog.description']({}, { locale: locale as any }),
-        },
-        ...(!hasPublishedPosts
+        { title },
+        { name: 'description', content: description },
+        { property: 'og:title', content: title },
+        { property: 'og:description', content: description },
+        { property: 'og:type', content: 'website' },
+        { name: 'twitter:card', content: 'summary' },
+        ...(!loaderData?.posts.length
           ? [{ name: 'robots', content: 'noindex,follow' }]
           : []),
       ],
@@ -52,7 +50,7 @@ function BlogPage() {
   const { locale, posts } = Route.useLoaderData();
 
   return (
-    <div className="bg-background text-foreground flex min-h-screen flex-col">
+    <div className="qw-editorial-page bg-background text-foreground flex min-h-screen flex-col">
       <Header />
       <main className="flex-1 px-4 py-16 sm:py-24">
         <div className="mx-auto max-w-5xl">

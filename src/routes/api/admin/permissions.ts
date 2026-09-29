@@ -59,7 +59,7 @@ async function GET({ request }: { request: Request }) {
 
     return respPage(permissions, total);
   } catch (error: any) {
-    return respErr(error.message || 'Internal error');
+    return respErr('Internal error');
   }
 }
 
@@ -73,7 +73,7 @@ async function POST({ request }: { request: Request }) {
     const result = await createPermission({ code, resource, action, title });
     return respData(result);
   } catch (error: any) {
-    return respErr(error.message || 'Internal error');
+    return respErr('Internal error');
   }
 }
 
@@ -92,7 +92,7 @@ async function PUT({ request }: { request: Request }) {
     });
     return respData(result);
   } catch (error: any) {
-    return respErr(error.message || 'Internal error');
+    return respErr('Internal error');
   }
 }
 
@@ -105,7 +105,7 @@ async function DELETE({ request }: { request: Request }) {
     await deletePermission(id);
     return respOk();
   } catch (error: any) {
-    return respErr(error.message || 'Internal error');
+    return respErr('Internal error');
   }
 }
 

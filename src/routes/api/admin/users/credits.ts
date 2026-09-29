@@ -66,7 +66,7 @@ async function POST({ request }: { request: Request }) {
     const balance = await getBalance(userId);
     return respData({ balance });
   } catch (error: any) {
-    return respErr(error.message || 'Internal error');
+    return respErr('Internal error');
   }
 }
 

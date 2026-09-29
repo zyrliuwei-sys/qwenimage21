@@ -5,7 +5,7 @@ import { ArrowLeft, Calendar } from 'lucide-react';
 import { Link } from '@/core/i18n/navigation';
 import { envConfigs } from '@/config';
 import { m } from '@/paraglide/messages.js';
-import { getLocale, localizeUrl } from '@/paraglide/runtime.js';
+import { getLocale, locales, localizeUrl } from '@/paraglide/runtime.js';
 import { Footer } from '@/blocks/footer';
 import { Header } from '@/blocks/header';
 import { MarkdownContent } from '@/components/markdown-content';
@@ -32,11 +32,32 @@ export const Route = createFileRoute('/blog/$slug')({
       meta: [
         { title: `${post.title} | ${envConfigs.app_name}` },
         { name: 'description', content: post.description },
-        ...(post.source === 'local'
-          ? [{ name: 'robots', content: 'noindex,follow' }]
+        { property: 'og:title', content: post.title },
+        { property: 'og:description', content: post.description },
+        { property: 'og:type', content: 'article' },
+        ...(post.image
+          ? [
+              {
+                property: 'og:image',
+                content: new URL(post.image, envConfigs.app_url).href,
+              },
+            ]
           : []),
+        {
+          name: 'twitter:card',
+          content: post.image ? 'summary_large_image' : 'summary',
+        },
       ],
-      links: [{ rel: 'canonical', href: canonical }],
+      links: [
+        { rel: 'canonical', href: canonical },
+        ...locales.map((loc) => ({
+          rel: 'alternate',
+          hrefLang: loc,
+          href: localizeUrl(`${envConfigs.app_url}/blog/${post.slug}`, {
+            locale: loc,
+          }).href,
+        })),
+      ],
     };
   },
   component: BlogPostPage,
@@ -51,7 +72,7 @@ function BlogPostPage() {
     post.source === 'local' ? loadLocalPost(post.slug, locale)?.default : null;
 
   return (
-    <div className="bg-background text-foreground flex min-h-screen flex-col">
+    <div className="qw-editorial-page bg-background text-foreground flex min-h-screen flex-col">
       <Header />
       <main className="flex-1 px-6 py-12 md:px-8 md:py-16">
         <article className="mx-auto max-w-3xl">
@@ -96,7 +117,9 @@ function BlogPostPage() {
             <img
               src={post.image}
               alt={post.title}
-              className="border-border mb-8 w-full rounded-2xl border object-cover"
+              width={1200}
+              height={675}
+              className="border-border mb-8 aspect-video w-full rounded-2xl border object-cover"
             />
           )}
 

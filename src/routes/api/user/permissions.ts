@@ -13,7 +13,7 @@ async function GET({ request }: { request: Request }) {
     const isAdmin = await hasPermission(session.user.id, 'admin.*');
     return respData({ isAdmin });
   } catch (error: any) {
-    return respErr(error.message || 'Internal error');
+    return respErr('Internal error');
   }
 }
 

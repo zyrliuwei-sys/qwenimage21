@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { ChevronRight, type LucideIcon } from 'lucide-react';
 
 import { Link, usePathname } from '@/core/i18n/navigation';
+import { envConfigs } from '@/config';
 import { localizeHref } from '@/paraglide/runtime.js';
 import {
   Sidebar,
@@ -135,7 +136,14 @@ export function AppSidebar({
               href={brandHref}
               className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm"
             >
-              <span className="flex-1 font-serif text-lg leading-none italic">
+              <img
+                src={envConfigs.app_logo}
+                alt=""
+                width="27"
+                height="27"
+                className="qw-app-logo"
+              />
+              <span className="flex-1 text-sm font-bold tracking-tight">
                 {brand}
               </span>
             </Link>

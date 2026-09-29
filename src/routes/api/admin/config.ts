@@ -24,7 +24,7 @@ async function GET({ request }: { request: Request }) {
     const configs = await getAdminConfigs();
     return respData(configs, noStore);
   } catch (error: any) {
-    return respErr(error.message || 'Internal error');
+    return respErr('Internal error');
   }
 }
 
@@ -46,7 +46,7 @@ async function POST({ request }: { request: Request }) {
     await saveConfigs(body);
     return respOk(noStore);
   } catch (error: any) {
-    return respErr(error.message || 'Internal error');
+    return respErr('Internal error');
   }
 }
 

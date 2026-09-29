@@ -33,7 +33,7 @@ async function POST({ request }: { request: Request }) {
     return respData({ trialEndsAt: result.trialEndsAt });
   } catch (e: any) {
     console.log('redeem invite code failed:', e);
-    return respErr(e?.message || 'Redeem failed');
+    return respErr('Redeem failed');
   }
 }
 

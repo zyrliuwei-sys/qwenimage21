@@ -20,7 +20,7 @@ async function GET({ request }: { request: Request }) {
 
     return respData({ balance, history });
   } catch (error: any) {
-    return respErr(error.message || 'Failed to get credits');
+    return respErr('Failed to get credits');
   }
 }
 

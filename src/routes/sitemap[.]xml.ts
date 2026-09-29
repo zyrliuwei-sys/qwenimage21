@@ -2,8 +2,18 @@ import { createFileRoute } from '@tanstack/react-router';
 
 import { envConfigs } from '@/config';
 import { baseLocale, locales, localizeUrl } from '@/paraglide/runtime.js';
+import { getLocalPosts } from '@/content/posts';
 
-const STATIC_PATHS = ['', '/privacy-policy', '/terms-of-service'];
+const STATIC_PATHS = [
+  '',
+  '/playground',
+  '/qwen-image-edit',
+  '/qwen-image-generator',
+  '/qwen-image',
+  '/blog',
+  '/privacy-policy',
+  '/terms-of-service',
+];
 
 type Entry = {
   path: string;
@@ -18,18 +28,33 @@ function urlFor(path: string, locale: string): string {
   }).href;
 }
 
+function xmlEscape(value: string): string {
+  return value.replace(/[&<>"']/g, (char) => {
+    const entities: Record<string, string> = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&apos;',
+    };
+    return entities[char];
+  });
+}
+
 function entryXml(e: Entry): string {
   const alternates = locales
     .map(
       (loc) =>
-        `    <xhtml:link rel="alternate" hreflang="${loc}" href="${urlFor(e.path, loc)}"/>`
+        `    <xhtml:link rel="alternate" hreflang="${loc}" href="${xmlEscape(urlFor(e.path, loc))}"/>`
     )
     .join('\n');
   return [
     '  <url>',
-    `    <loc>${urlFor(e.path, baseLocale)}</loc>`,
+    `    <loc>${xmlEscape(urlFor(e.path, baseLocale))}</loc>`,
     alternates,
-    e.lastModified ? `    <lastmod>${e.lastModified}</lastmod>` : null,
+    e.lastModified
+      ? `    <lastmod>${xmlEscape(e.lastModified)}</lastmod>`
+      : null,
     `    <changefreq>${e.changeFrequency}</changefreq>`,
     `    <priority>${e.priority}</priority>`,
     '  </url>',
@@ -44,33 +69,39 @@ export const Route = createFileRoute('/sitemap.xml')({
       GET: async () => {
         const entries: Entry[] = STATIC_PATHS.map((path) => ({
           path,
-          changeFrequency: path === '/blog' ? 'daily' : 'weekly',
-          priority: path === '' ? 1 : 0.8,
+          changeFrequency: path === '/blog' ? 'weekly' : 'monthly',
+          priority: path === '' ? 1 : path === '/playground' ? 0.9 : 0.7,
         }));
 
-        // Only published project articles belong in the sitemap. The bundled
-        // ShipAny tutorial posts are demo content and carry noindex.
+        const posts = new Map<
+          string,
+          { slug: string; createdAt: Date | string }
+        >(
+          getLocalPosts(baseLocale).map((post) => [
+            post.slug,
+            { slug: post.slug, createdAt: post.createdAt },
+          ])
+        );
         try {
           const { listPublishedArticles } =
             await import('@/modules/posts/service');
           const rows = await listPublishedArticles().catch(() => []);
-          if (rows.length > 0) {
-            entries.push({
-              path: '/blog',
-              changeFrequency: 'weekly',
-              priority: 0.7,
-            });
-          }
           for (const post of rows) {
-            entries.push({
-              path: `/blog/${post.slug}`,
-              lastModified: new Date(post.createdAt).toISOString(),
-              changeFrequency: 'monthly',
-              priority: 0.6,
+            posts.set(post.slug, {
+              slug: post.slug,
+              createdAt: post.createdAt,
             });
           }
         } catch {
-          // Database unreachable — keep the static project pages.
+          // Database unreachable — keep the local project articles.
+        }
+        for (const post of posts.values()) {
+          entries.push({
+            path: `/blog/${post.slug}`,
+            lastModified: new Date(post.createdAt).toISOString(),
+            changeFrequency: 'monthly',
+            priority: 0.6,
+          });
         }
 
         const xml = [

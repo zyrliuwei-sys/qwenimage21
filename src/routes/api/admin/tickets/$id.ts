@@ -38,7 +38,7 @@ async function GET({
     const messages = await getTicketMessages(id);
     return respData({ ticket, messages });
   } catch (error: any) {
-    return respErr(error.message || 'Internal error');
+    return respErr('Internal error');
   }
 }
 
@@ -73,7 +73,7 @@ async function POST({
     });
     return respData(message);
   } catch (error: any) {
-    return respErr(error.message || 'Internal error');
+    return respErr('Internal error');
   }
 }
 
@@ -98,7 +98,7 @@ async function PATCH({
     await updateTicketStatus(id, status);
     return respOk();
   } catch (error: any) {
-    return respErr(error.message || 'Internal error');
+    return respErr('Internal error');
   }
 }
 

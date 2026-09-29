@@ -46,7 +46,7 @@ async function POST({ request }: { request: Request }) {
     const result = await runTest(group, inputs, configs);
     return respData(result);
   } catch (error: any) {
-    return respErr(error.message || 'Internal error');
+    return respErr('Internal error');
   }
 }
 

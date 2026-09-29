@@ -26,7 +26,7 @@ async function GET({ request }: { request: Request }) {
     const perms = await getRolePermissions(roleId);
     return respData(perms);
   } catch (error: any) {
-    return respErr(error.message || 'Internal error');
+    return respErr('Internal error');
   }
 }
 
@@ -38,7 +38,7 @@ async function PUT({ request }: { request: Request }) {
     await assignPermissionsToRole(roleId, permissionIds || []);
     return respOk();
   } catch (error: any) {
-    return respErr(error.message || 'Internal error');
+    return respErr('Internal error');
   }
 }
 

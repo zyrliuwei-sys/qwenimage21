@@ -67,7 +67,7 @@ async function GET({ request }: { request: Request }) {
 
     return respPage(roles, total);
   } catch (error: any) {
-    return respErr(error.message || 'Internal error');
+    return respErr('Internal error');
   }
 }
 
@@ -79,7 +79,7 @@ async function POST({ request }: { request: Request }) {
     const result = await createRole({ name, title, description });
     return respData(result);
   } catch (error: any) {
-    return respErr(error.message || 'Internal error');
+    return respErr('Internal error');
   }
 }
 
@@ -91,7 +91,7 @@ async function PUT({ request }: { request: Request }) {
     const result = await updateRole(id, { name, title, description });
     return respData(result);
   } catch (error: any) {
-    return respErr(error.message || 'Internal error');
+    return respErr('Internal error');
   }
 }
 
@@ -104,7 +104,7 @@ async function DELETE({ request }: { request: Request }) {
     await deleteRole(id);
     return respOk();
   } catch (error: any) {
-    return respErr(error.message || 'Internal error');
+    return respErr('Internal error');
   }
 }
 

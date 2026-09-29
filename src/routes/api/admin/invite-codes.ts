@@ -73,7 +73,7 @@ async function GET({ request }: { request: Request }) {
 
     return respPage(rows, total);
   } catch (error: any) {
-    return respErr(error.message || 'Internal error');
+    return respErr('Internal error');
   }
 }
 
@@ -115,7 +115,7 @@ async function POST({ request }: { request: Request }) {
     const row = await createInviteCode({ code, ...params });
     return respData(row);
   } catch (error: any) {
-    return respErr(error.message || 'Internal error');
+    return respErr('Internal error');
   }
 }
 
@@ -128,7 +128,7 @@ async function DELETE({ request }: { request: Request }) {
     await deleteInviteCode(id);
     return respOk();
   } catch (error: any) {
-    return respErr(error.message || 'Internal error');
+    return respErr('Internal error');
   }
 }
 
