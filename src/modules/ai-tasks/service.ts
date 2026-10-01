@@ -1,4 +1,4 @@
-import { and, desc, eq, isNull } from 'drizzle-orm';
+import { and, desc, eq, inArray, isNull } from 'drizzle-orm';
 
 import { db } from '@/core/db';
 import { aiTask } from '@/config/db/schema';
@@ -74,7 +74,24 @@ export async function createTask(params: {
 }
 
 /**
+ * Store the provider's request id (e.g. Fal request_id) on a task.
+ */
+export async function setTaskProviderId(
+  taskId: string,
+  providerTaskId: string
+) {
+  await db()
+    .update(aiTask)
+    .set({ taskId: providerTaskId })
+    .where(eq(aiTask.id, taskId));
+}
+
+/**
  * Update task status. Revokes credits on failure.
+ *
+ * Only a task that is still pending/processing can move to a final status, and
+ * the move is a single conditional UPDATE — so concurrent pollers can't both
+ * finish the task or refund its credits twice.
  */
 export async function updateTask(params: {
   taskId: string;
@@ -83,21 +100,23 @@ export async function updateTask(params: {
 }) {
   const { taskId, status, taskResult } = params;
 
-  const [task] = await db()
-    .select()
-    .from(aiTask)
-    .where(eq(aiTask.id, taskId))
-    .limit(1);
-
-  if (!task) throw new Error('Task not found');
-
-  // Update task
   const updateData: any = { status };
   if (taskResult) {
     updateData.taskResult = JSON.stringify(taskResult);
   }
 
-  await db().update(aiTask).set(updateData).where(eq(aiTask.id, taskId));
+  const updated = await db()
+    .update(aiTask)
+    .set(updateData)
+    .where(
+      and(
+        eq(aiTask.id, taskId),
+        inArray(aiTask.status, [AITaskStatus.PENDING, AITaskStatus.PROCESSING])
+      )
+    )
+    .returning();
+  const task = updated[0];
+  if (!task) return false;
 
   // Revoke credits on failure
   if (status === AITaskStatus.FAILED && task.taskInfo) {
@@ -110,6 +129,7 @@ export async function updateTask(params: {
       // Ignore parse errors
     }
   }
+  return true;
 }
 
 /**

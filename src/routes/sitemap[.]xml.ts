@@ -7,6 +7,7 @@ import { getLocalPosts } from '@/content/posts';
 const STATIC_PATHS = [
   '',
   '/playground',
+  '/pricing',
   '/qwen-image-edit',
   '/qwen-image-generator',
   '/qwen-image',

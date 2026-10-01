@@ -14,6 +14,7 @@ import { useSession } from '@/core/auth/client';
 import { Link } from '@/core/i18n/navigation';
 import { envConfigs } from '@/config';
 import { m } from '@/paraglide/messages.js';
+import { QwenPricing } from '@/blocks/qwen-pricing';
 import { BuiltWithShipAny } from '@/components/built-with-shipany';
 import { SiteUserMenu } from '@/components/site-user-menu';
 
@@ -165,6 +166,9 @@ export function QwenHeader() {
           <a href="/#sources" onClick={() => setOpen(false)}>
             {m['qwen.nav.sources']()}
           </a>
+          <Link href="/pricing" onClick={() => setOpen(false)}>
+            {m['qwen.nav.pricing']()}
+          </Link>
           {!user && !isPending && (
             <Link
               className="qw-nav-signin"
@@ -534,6 +538,7 @@ export function QwenHomePage() {
             </a>
           </div>
         </section>
+        <QwenPricing />
         <section className="qw-closing qw-wrap">
           <div>
             <p className="qw-eyebrow">{m['qwen.closing.eyebrow']()}</p>

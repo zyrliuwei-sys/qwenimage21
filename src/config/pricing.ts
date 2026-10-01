@@ -29,126 +29,149 @@ export type PricingProduct = {
   plan?: PricingPlanInfo;
 };
 
+export type PricingGroupKey = 'one_time' | 'monthly' | 'yearly';
+export type PricingTier = 'basic' | 'pro' | 'max';
+
 /**
- * Default demo catalog. Replace with your real products when launching.
- * Keys MUST match what the pricing UI sends as product_id.
+ * Qwen Image credit plans. 1 credit = $0.01 of Fal cost × 7 (see
+ * config/qwen-image.ts): a 1K image costs 28 credits, a 2K image 53.
+ * Subscriptions add a small volume bonus; yearly ≈ 10 months' price for
+ * 12 months of credits, granted upfront.
  */
-export const pricingCatalog: Record<string, PricingProduct> = {
-  starter_monthly: {
-    productId: 'starter_monthly',
-    productName: 'Starter',
-    planName: 'Starter',
-    description: 'Starter Monthly',
-    type: PaymentType.SUBSCRIPTION,
-    priceInCents: 900,
-    currency: 'usd',
-    credits: 5000,
-    plan: {
-      name: 'Starter',
-      interval: PaymentInterval.MONTH,
-      intervalCount: 1,
-    },
+const planRows: Array<{
+  group: PricingGroupKey;
+  tier: PricingTier;
+  name: string;
+  priceInCents: number;
+  credits: number;
+}> = [
+  {
+    group: 'one_time',
+    tier: 'basic',
+    name: 'Starter',
+    priceInCents: 1000,
+    credits: 1000,
   },
-  pro_monthly: {
-    productId: 'pro_monthly',
-    productName: 'Pro',
-    planName: 'Pro',
-    description: 'Pro Monthly',
-    type: PaymentType.SUBSCRIPTION,
-    priceInCents: 2900,
-    currency: 'usd',
-    credits: 50000,
-    plan: { name: 'Pro', interval: PaymentInterval.MONTH, intervalCount: 1 },
+  {
+    group: 'one_time',
+    tier: 'pro',
+    name: 'Creator',
+    priceInCents: 3000,
+    credits: 3000,
   },
-  enterprise_monthly: {
-    productId: 'enterprise_monthly',
-    productName: 'Enterprise',
-    planName: 'Enterprise',
-    description: 'Enterprise Monthly',
-    type: PaymentType.SUBSCRIPTION,
+  {
+    group: 'one_time',
+    tier: 'max',
+    name: 'Studio',
+    priceInCents: 10000,
+    credits: 10000,
+  },
+  {
+    group: 'monthly',
+    tier: 'basic',
+    name: 'Basic',
+    priceInCents: 990,
+    credits: 1000,
+  },
+  {
+    group: 'monthly',
+    tier: 'pro',
+    name: 'Pro',
+    priceInCents: 2990,
+    credits: 3200,
+  },
+  {
+    group: 'monthly',
+    tier: 'max',
+    name: 'Max',
+    priceInCents: 9990,
+    credits: 11000,
+  },
+  {
+    group: 'yearly',
+    tier: 'basic',
+    name: 'Basic',
     priceInCents: 9900,
-    currency: 'usd',
-    credits: 500000,
-    plan: {
-      name: 'Enterprise',
-      interval: PaymentInterval.MONTH,
-      intervalCount: 1,
-    },
+    credits: 12000,
   },
-  starter_yearly: {
-    productId: 'starter_yearly',
-    productName: 'Starter',
-    planName: 'Starter',
-    description: 'Starter Yearly',
-    type: PaymentType.SUBSCRIPTION,
-    priceInCents: 8600,
-    currency: 'usd',
-    credits: 60000,
-    plan: { name: 'Starter', interval: PaymentInterval.YEAR, intervalCount: 1 },
+  {
+    group: 'yearly',
+    tier: 'pro',
+    name: 'Pro',
+    priceInCents: 29900,
+    credits: 38400,
   },
-  pro_yearly: {
-    productId: 'pro_yearly',
-    productName: 'Pro',
-    planName: 'Pro',
-    description: 'Pro Yearly',
-    type: PaymentType.SUBSCRIPTION,
-    priceInCents: 27800,
-    currency: 'usd',
-    credits: 600000,
-    plan: { name: 'Pro', interval: PaymentInterval.YEAR, intervalCount: 1 },
+  {
+    group: 'yearly',
+    tier: 'max',
+    name: 'Max',
+    priceInCents: 99900,
+    credits: 132000,
   },
-  enterprise_yearly: {
-    productId: 'enterprise_yearly',
-    productName: 'Enterprise',
-    planName: 'Enterprise',
-    description: 'Enterprise Yearly',
-    type: PaymentType.SUBSCRIPTION,
-    priceInCents: 95000,
-    currency: 'usd',
-    credits: 6000000,
-    plan: {
-      name: 'Enterprise',
-      interval: PaymentInterval.YEAR,
-      intervalCount: 1,
-    },
+];
+
+const groupMeta: Record<
+  PricingGroupKey,
+  {
+    suffix: string;
+    label: string;
+    validDays: number;
+    interval?: PaymentInterval;
+  }
+> = {
+  // One-time credits never expire.
+  one_time: { suffix: 'pack', label: 'Credit Pack', validDays: 0 },
+  // Subscription credits expire at the end of the billing period.
+  monthly: {
+    suffix: 'monthly',
+    label: 'Monthly',
+    validDays: 31,
+    interval: PaymentInterval.MONTH,
   },
-  starter_lifetime: {
-    productId: 'starter_lifetime',
-    productName: 'Starter',
-    planName: 'Starter Lifetime',
-    description: 'Starter Lifetime',
-    type: PaymentType.ONE_TIME,
-    priceInCents: 14900,
-    currency: 'usd',
-    credits: 100000,
-  },
-  pro_lifetime: {
-    productId: 'pro_lifetime',
-    productName: 'Pro',
-    planName: 'Pro Lifetime',
-    description: 'Pro Lifetime',
-    type: PaymentType.ONE_TIME,
-    priceInCents: 49900,
-    currency: 'usd',
-    credits: 1000000,
-  },
-  enterprise_lifetime: {
-    productId: 'enterprise_lifetime',
-    productName: 'Enterprise',
-    planName: 'Enterprise Lifetime',
-    description: 'Enterprise Lifetime',
-    type: PaymentType.ONE_TIME,
-    priceInCents: 199900,
-    currency: 'usd',
-    credits: 10000000,
+  yearly: {
+    suffix: 'yearly',
+    label: 'Yearly',
+    validDays: 366,
+    interval: PaymentInterval.YEAR,
   },
 };
+
+export type PricingProductWithMeta = PricingProduct & {
+  group: PricingGroupKey;
+  tier: PricingTier;
+};
+
+/** Keys MUST match what the pricing UI sends as product_id. */
+export const pricingCatalog: Record<string, PricingProductWithMeta> =
+  Object.fromEntries(
+    planRows.map((row) => {
+      const meta = groupMeta[row.group];
+      const productId = `${row.tier}_${meta.suffix}`;
+      const product: PricingProductWithMeta = {
+        productId,
+        productName: row.name,
+        planName: `${row.name} ${meta.label}`,
+        description: `${row.name} ${meta.label} – ${row.credits} credits`,
+        type: meta.interval ? PaymentType.SUBSCRIPTION : PaymentType.ONE_TIME,
+        priceInCents: row.priceInCents,
+        currency: 'usd',
+        credits: row.credits,
+        creditsValidDays: meta.validDays,
+        plan: meta.interval
+          ? { name: row.name, interval: meta.interval, intervalCount: 1 }
+          : undefined,
+        group: row.group,
+        tier: row.tier,
+      };
+      return [productId, product];
+    })
+  );
 
 export function getPricingProduct(productId: string): PricingProduct | null {
   if (!productId) return null;
   return pricingCatalog[productId] ?? null;
 }
 
-export function listPricingProducts(): PricingProduct[] {
+export function listPricingProducts(): PricingProductWithMeta[] {
   return Object.values(pricingCatalog);
 }
