@@ -4,6 +4,7 @@ import { Link } from '@/core/i18n/navigation';
 import { envConfigs } from '@/config';
 import { cn } from '@/lib/utils';
 import { BuiltWithShipAny } from '@/components/built-with-shipany';
+import { FooterBadgeList } from '@/components/footer-badge-list';
 import { LocaleSelector } from '@/components/locale-selector';
 
 export interface FooterColumn {
@@ -117,6 +118,8 @@ export function SiteFooter({
             className="border-border text-foreground hover:bg-accent hover:text-accent-foreground"
           />
         </div>
+
+        <FooterBadgeList className="mt-6" />
 
         {/* Bottom bar */}
         <div className="border-border mt-6 flex flex-col gap-3 border-t pt-5 sm:flex-row sm:items-center sm:justify-between">

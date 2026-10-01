@@ -16,6 +16,7 @@ import { envConfigs } from '@/config';
 import { m } from '@/paraglide/messages.js';
 import { QwenPricing } from '@/blocks/qwen-pricing';
 import { BuiltWithShipAny } from '@/components/built-with-shipany';
+import { FooterBadgeList } from '@/components/footer-badge-list';
 import { SiteUserMenu } from '@/components/site-user-menu';
 
 import '@/styles/qwen-site.css';
@@ -566,6 +567,7 @@ export function QwenHomePage() {
             <Link href="/terms-of-service">{m['qwen.footer.terms']()}</Link>
           </div>
         </div>
+        <FooterBadgeList className="mt-6" />
         <div className="qw-footer-bottom">
           <span>
             © {new Date().getFullYear()} {envConfigs.app_name}
