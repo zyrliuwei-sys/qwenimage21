@@ -1209,3 +1209,26 @@
     margin-right: 22px;
   }
 }
+.qw-signin-link {
+  font-size: 12px;
+  font-weight: 750;
+  white-space: nowrap;
+  padding: 11px 4px;
+}
+.qw-signin-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+/* Desktop: sign-in sits in the header actions; mobile: inside the menu. */
+.qw-nav-signin {
+  display: none;
+}
+@media (max-width: 700px) {
+  .qw-signin-link {
+    display: none;
+  }
+  .qw-nav .qw-nav-signin {
+    display: block;
+    padding: 12px 0;
+  }
+}

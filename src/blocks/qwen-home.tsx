@@ -10,11 +10,12 @@ import {
   X,
 } from 'lucide-react';
 
+import { useSession } from '@/core/auth/client';
 import { Link } from '@/core/i18n/navigation';
 import { envConfigs } from '@/config';
 import { m } from '@/paraglide/messages.js';
 import { BuiltWithShipAny } from '@/components/built-with-shipany';
-import { PublicThemeToggle } from '@/components/public-theme-toggle';
+import { SiteUserMenu } from '@/components/site-user-menu';
 
 import '@/styles/qwen-site.css';
 import '@/styles/qwen-refined.css';
@@ -137,6 +138,8 @@ const guideQuestions = [
 
 export function QwenHeader() {
   const [open, setOpen] = useState(false);
+  const { data: session, isPending } = useSession();
+  const user = session?.user;
   return (
     <header className="qw-header">
       <div className="qw-header-inner">
@@ -162,9 +165,30 @@ export function QwenHeader() {
           <a href="/#sources" onClick={() => setOpen(false)}>
             {m['qwen.nav.sources']()}
           </a>
+          {!user && !isPending && (
+            <Link
+              className="qw-nav-signin"
+              href="/sign-in"
+              onClick={() => setOpen(false)}
+            >
+              {m['common.nav.sign_in']()}
+            </Link>
+          )}
         </nav>
         <div className="qw-header-actions">
-          <PublicThemeToggle label={m['qwen.theme.toggle']()} />
+          {user ? (
+            <SiteUserMenu
+              name={user.name || 'User'}
+              email={user.email}
+              image={user.image}
+            />
+          ) : (
+            !isPending && (
+              <Link className="qw-signin-link" href="/sign-in">
+                {m['common.nav.sign_in']()}
+              </Link>
+            )
+          )}
           <Link className="qw-create-link" href="/playground">
             {m['qwen.nav.create']()} <ArrowUpRight size={16} />
           </Link>

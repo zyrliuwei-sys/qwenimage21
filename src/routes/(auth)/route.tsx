@@ -3,7 +3,6 @@ import { createFileRoute, Outlet } from '@tanstack/react-router';
 import { Link } from '@/core/i18n/navigation';
 import { envConfigs } from '@/config';
 import { m } from '@/paraglide/messages.js';
-import { PublicThemeToggle } from '@/components/public-theme-toggle';
 
 export const Route = createFileRoute('/(auth)')({
   head: () => ({ meta: [{ name: 'robots', content: 'noindex,nofollow' }] }),
@@ -13,10 +12,6 @@ export const Route = createFileRoute('/(auth)')({
 function AuthLayout() {
   return (
     <div className="qw-auth-shell">
-      <PublicThemeToggle
-        label={m['qwen.theme.toggle']()}
-        className="qw-auth-theme"
-      />
       <aside className="qw-auth-art">
         <Link href="/" className="qw-auth-brand">
           <img

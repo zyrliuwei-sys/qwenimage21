@@ -13,7 +13,6 @@ import { Link } from '@/core/i18n/navigation';
 import { envConfigs } from '@/config';
 import { apiPost } from '@/lib/api-client';
 import { m } from '@/paraglide/messages.js';
-import { PublicThemeToggle } from '@/components/public-theme-toggle';
 
 import '@/styles/qwen-site.css';
 import '@/styles/qwen-refined.css';
@@ -109,7 +108,6 @@ export function QwenPlaygroundPage() {
           <span>{envConfigs.app_name}</span>
         </Link>
         <div className="qw-play-head-actions">
-          <PublicThemeToggle label={m['qwen.theme.toggle']()} />
           <Link href="/">
             <ArrowLeft size={16} />
             {m['qwen.play.back']()}
