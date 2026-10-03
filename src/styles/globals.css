@@ -164,7 +164,19 @@
       transform: translate3d(4%, 6%, 0) scale(1.08);
     }
   }
+  @keyframes badge-marquee {
+    from {
+      transform: translate3d(-50%, 0, 0);
+    }
+    to {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+  .animate-badge-marquee {
+    animation: badge-marquee linear infinite;
+  }
   @media (prefers-reduced-motion: reduce) {
+    .animate-badge-marquee,
     .animate-drift-a,
     .animate-drift-b,
     .animate-drift-c {
