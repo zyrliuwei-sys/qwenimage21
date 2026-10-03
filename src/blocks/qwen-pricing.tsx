@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { Check, LoaderCircle } from 'lucide-react';
 import { toast } from 'sonner';
@@ -13,6 +13,7 @@ import {
 import { CREDITS_PER_IMAGE } from '@/config/qwen-image';
 import { apiPost } from '@/lib/api-client';
 import { m } from '@/paraglide/messages.js';
+import { localizeHref } from '@/paraglide/runtime.js';
 import { usePublicConfig } from '@/hooks/use-public-config';
 import {
   PaymentProviderModal,
@@ -36,7 +37,7 @@ const formatNumber = (n: number) => n.toLocaleString('en-US');
 export function QwenPricing() {
   const router = useRouter();
   const { data: session } = useSession();
-  const { data: configs = {} } = usePublicConfig();
+  const { data: configs = {}, isSuccess: configsReady } = usePublicConfig();
   const [group, setGroup] = useState<PricingGroupKey>('monthly');
   const [pending, setPending] = useState<PricingProductWithMeta | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -69,7 +70,9 @@ export function QwenPricing() {
       apiPost<{ checkout_url?: string }>('/api/payment/checkout', {
         product_id: vars.product.productId,
         payment_provider: vars.provider,
-        redirect: '/playground',
+        // Localized so a /zh buyer lands back on the Chinese pages.
+        redirect: localizeHref('/playground?paid=1'),
+        cancel: localizeHref('/pricing'),
       }),
     onSuccess: (data) => {
       if (!data?.checkout_url) {
@@ -96,7 +99,9 @@ export function QwenPricing() {
 
   const onBuy = (product: PricingProductWithMeta) => {
     if (!session?.user) {
-      router.push(`/sign-in?callbackUrl=${encodeURIComponent('/pricing')}`);
+      // Come back to this exact plan after signing in and resume checkout.
+      const back = `/pricing?buy=${encodeURIComponent(product.productId)}`;
+      router.push(`/sign-in?callbackUrl=${encodeURIComponent(back)}`);
       return;
     }
     if (
@@ -114,6 +119,30 @@ export function QwenPricing() {
         'stripe') as PaymentProvider
     );
   };
+
+  // Resume a purchase started before sign-in (`/pricing?buy=<productId>`).
+  const resumed = useRef(false);
+  useEffect(() => {
+    if (resumed.current || !session?.user || !configsReady) return;
+    const params = new URLSearchParams(window.location.search);
+    const productId = params.get('buy');
+    if (!productId) return;
+    resumed.current = true;
+    params.delete('buy');
+    const query = params.toString();
+    window.history.replaceState(
+      null,
+      '',
+      `${window.location.pathname}${query ? `?${query}` : ''}`
+    );
+    const product = listPricingProducts().find(
+      (p) => p.productId === productId
+    );
+    if (!product) return;
+    setGroup(product.group);
+    onBuy(product);
+    // Runs once the session and payment config are known.
+  }, [session?.user, configsReady]);
 
   return (
     <section id="pricing" className="qw-pricing qw-wrap">

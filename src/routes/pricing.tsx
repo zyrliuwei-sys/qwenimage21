@@ -24,6 +24,7 @@ function PricingPage() {
         <span className="qw-pricing-footer-links">
           <Link href="/privacy-policy">{m['qwen.footer.privacy']()}</Link>
           <Link href="/terms-of-service">{m['qwen.footer.terms']()}</Link>
+          <Link href="/refund-policy">{m['qwen.footer.refund']()}</Link>
         </span>
       </footer>
     </div>

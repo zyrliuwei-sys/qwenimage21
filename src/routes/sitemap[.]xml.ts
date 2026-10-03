@@ -14,6 +14,7 @@ const STATIC_PATHS = [
   '/blog',
   '/privacy-policy',
   '/terms-of-service',
+  '/refund-policy',
 ];
 
 type Entry = {

@@ -1,13 +1,20 @@
 import { useEffect, useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import {
   ArrowLeft,
   ArrowUpRight,
+  Download,
   LoaderCircle,
   Sparkles,
   UploadCloud,
   X,
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { useSession } from '@/core/auth/client';
 import { Link, useRouter } from '@/core/i18n/navigation';
@@ -20,8 +27,10 @@ import {
   type QwenImageRatio,
   type QwenImageResolution,
 } from '@/config/qwen-image';
-import { apiGet, apiPost } from '@/lib/api-client';
+import { ApiError, apiGet, apiPost } from '@/lib/api-client';
 import { m } from '@/paraglide/messages.js';
+import { getLocale, localizeHref } from '@/paraglide/runtime.js';
+import { SiteUserMenu } from '@/components/site-user-menu';
 
 import '@/styles/qwen-site.css';
 import '@/styles/qwen-refined.css';
@@ -32,6 +41,35 @@ type TaskStatus =
   | { status: 'pending' }
   | { status: 'success'; images: string[] }
   | { status: 'failed'; error: string };
+
+type HistoryPage = {
+  items: Array<{ id: string; prompt: string; images: string[] }>;
+  hasMore: boolean;
+};
+
+// Prompt + options survive a trip to sign-in or checkout (reference images
+// are too large for sessionStorage and are not kept).
+const DRAFT_KEY = 'qw-play-draft';
+type Draft = {
+  mode: Mode;
+  prompt: string;
+  ratio: QwenImageRatio;
+  resolution: QwenImageResolution;
+  numImages: number;
+};
+
+function readDraft(): Partial<Draft> | null {
+  try {
+    const raw = window.sessionStorage.getItem(DRAFT_KEY);
+    return raw ? (JSON.parse(raw) as Partial<Draft>) : null;
+  } catch {
+    return null;
+  }
+}
+
+function downloadHref(taskId: string, index: number) {
+  return `/api/qwen-image/download?taskId=${encodeURIComponent(taskId)}&index=${index}`;
+}
 
 const MAX_INPUT_FILE_BYTES = 10 * 1024 * 1024;
 const MIN_EDIT_SIDE = 384;
@@ -88,6 +126,53 @@ export function QwenPlaygroundPage() {
   const [taskId, setTaskId] = useState('');
 
   const cost = getCreditCost(resolution, numImages);
+  const locale = getLocale();
+
+  // Restore the draft once, then keep it in sync. `draftReady` is state, not
+  // a ref, so the first save waits for the render carrying the restored values.
+  const [draftReady, setDraftReady] = useState(false);
+  useEffect(() => {
+    const draft = readDraft();
+    if (draft) {
+      if (draft.mode === 'generate' || draft.mode === 'edit')
+        setMode(draft.mode);
+      if (typeof draft.prompt === 'string') setPrompt(draft.prompt);
+      if (draft.ratio) setRatio(draft.ratio);
+      if (draft.resolution === '1k' || draft.resolution === '2k')
+        setResolution(draft.resolution);
+      if (
+        Number.isInteger(draft.numImages) &&
+        draft.numImages! >= 1 &&
+        draft.numImages! <= MAX_IMAGES_PER_REQUEST
+      )
+        setNumImages(draft.numImages!);
+    }
+    setDraftReady(true);
+  }, []);
+  useEffect(() => {
+    if (!draftReady) return;
+    try {
+      const draft: Draft = { mode, prompt, ratio, resolution, numImages };
+      window.sessionStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+    } catch {
+      // Storage unavailable (private mode) — the draft just isn't kept.
+    }
+  }, [draftReady, mode, prompt, ratio, resolution, numImages]);
+
+  // Back from checkout (`?paid=1`): confirm and refresh the balance.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('paid') !== '1') return;
+    params.delete('paid');
+    const query = params.toString();
+    window.history.replaceState(
+      null,
+      '',
+      `${window.location.pathname}${query ? `?${query}` : ''}`
+    );
+    toast.success(m['qwen.play.paid_success']());
+    queryClient.invalidateQueries({ queryKey: ['credits-balance'] });
+  }, [queryClient]);
 
   const balanceQuery = useQuery({
     queryKey: ['credits-balance'],
@@ -100,7 +185,7 @@ export function QwenPlaygroundPage() {
     queryKey: ['qwen-image-task', taskId],
     queryFn: () =>
       apiGet<TaskStatus>(
-        `/api/qwen-image/status?taskId=${encodeURIComponent(taskId)}`
+        `/api/qwen-image/status?taskId=${encodeURIComponent(taskId)}&locale=${locale}`
       ),
     enabled: !!taskId,
     refetchInterval: (query) =>
@@ -116,12 +201,32 @@ export function QwenPlaygroundPage() {
       // A failed task refunds its credits; refresh the balance either way.
       queryClient.invalidateQueries({ queryKey: ['credits-balance'] });
     }
+    if (task?.status === 'success') {
+      queryClient.invalidateQueries({ queryKey: ['qwen-image-history'] });
+    }
   }, [task, queryClient]);
+
+  useEffect(() => {
+    if (taskQuery.isError) {
+      setError(taskQuery.error.message || m['qwen.play.generate_error']());
+    }
+  }, [taskQuery.isError, taskQuery.error]);
+
+  const history = useInfiniteQuery({
+    queryKey: ['qwen-image-history'],
+    queryFn: ({ pageParam }) =>
+      apiGet<HistoryPage>(`/api/qwen-image/history?page=${pageParam}`),
+    initialPageParam: 1,
+    getNextPageParam: (last, pages) =>
+      last.hasMore ? pages.length + 1 : undefined,
+    enabled: signedIn,
+  });
+  const historyItems = history.data?.pages.flatMap((p) => p.items) ?? [];
 
   const submit = useMutation({
     mutationFn: () =>
       apiPost<{ taskId: string; costCredits: number }>(
-        '/api/qwen-image/generate',
+        `/api/qwen-image/generate?locale=${locale}`,
         {
           mode,
           prompt: prompt.trim(),
@@ -138,7 +243,12 @@ export function QwenPlaygroundPage() {
     },
     onError: (cause: Error) => {
       setError(cause.message || m['qwen.play.generate_error']());
-      if (/credits/i.test(cause.message)) setNeedsCredits(true);
+      if (
+        cause instanceof ApiError &&
+        (cause.data as { needCredits?: boolean } | undefined)?.needCredits
+      ) {
+        setNeedsCredits(true);
+      }
     },
   });
 
@@ -244,6 +354,17 @@ export function QwenPlaygroundPage() {
             <ArrowLeft size={16} />
             {m['qwen.play.back']()}
           </Link>
+          {session?.user ? (
+            <SiteUserMenu
+              name={session.user.name || 'User'}
+              email={session.user.email}
+              image={session.user.image}
+            />
+          ) : (
+            <a href={localizeHref('/sign-in?callbackUrl=%2Fplayground')}>
+              {m['common.nav.sign_in']()}
+            </a>
+          )}
         </div>
       </header>
       <main className="qw-wrap">
@@ -486,14 +607,27 @@ export function QwenPlaygroundPage() {
                 }
               >
                 {images.map((src, i) => (
-                  <a key={src} href={src} target="_blank" rel="noreferrer">
-                    <img
-                      className="qw-generated-image"
-                      src={src}
-                      alt={m['qwen.play.generated_alt']()}
-                      loading={i === 0 ? 'eager' : 'lazy'}
-                    />
-                  </a>
+                  <figure key={src} className="qw-result-item">
+                    <a href={src} target="_blank" rel="noreferrer">
+                      <img
+                        className="qw-generated-image"
+                        src={src}
+                        alt={m['qwen.play.generated_alt']()}
+                        loading={i === 0 ? 'eager' : 'lazy'}
+                      />
+                    </a>
+                    <a
+                      className="qw-download"
+                      href={downloadHref(taskId, i)}
+                      download
+                      aria-label={m['qwen.play.download_image']({
+                        n: String(i + 1),
+                      })}
+                    >
+                      <Download size={15} />
+                      {m['qwen.play.download']()}
+                    </a>
+                  </figure>
                 ))}
               </div>
             ) : busy ? (
@@ -518,15 +652,87 @@ export function QwenPlaygroundPage() {
                 ? m['qwen.play.result_note']()
                 : m['qwen.play.preview_note']()}
             </p>
-            <Link href="/#gallery" className="qw-button qw-button-light">
+            <a
+              href={localizeHref('/#gallery')}
+              className="qw-button qw-button-light"
+            >
               {m['qwen.play.gallery_link']()} <ArrowUpRight size={17} />
-            </Link>
+            </a>
           </section>
         </div>
+        {signedIn && (
+          <section className="qw-history" aria-labelledby="qw-history-heading">
+            <p className="qw-eyebrow">{m['qwen.play.history_eyebrow']()}</p>
+            <h2 id="qw-history-heading">{m['qwen.play.history_heading']()}</h2>
+            {historyItems.length === 0 ? (
+              !history.isPending && (
+                <p className="qw-history-empty">
+                  {m['qwen.play.history_empty']()}
+                </p>
+              )
+            ) : (
+              <div className="qw-history-grid">
+                {historyItems.flatMap((item) =>
+                  item.images.map((src, i) => (
+                    <figure key={`${item.id}-${i}`}>
+                      <a href={src} target="_blank" rel="noreferrer">
+                        <img
+                          src={src}
+                          alt={item.prompt}
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      </a>
+                      <figcaption>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setMode('generate');
+                            setPrompt(item.prompt);
+                            setError('');
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }}
+                        >
+                          {m['qwen.play.history_reuse']()}
+                        </button>
+                        <a
+                          href={downloadHref(item.id, i)}
+                          download
+                          aria-label={m['qwen.play.download_image']({
+                            n: String(i + 1),
+                          })}
+                        >
+                          <Download size={14} />
+                        </a>
+                      </figcaption>
+                    </figure>
+                  ))
+                )}
+              </div>
+            )}
+            {history.hasNextPage && (
+              <button
+                type="button"
+                className="qw-button qw-button-light qw-history-more"
+                onClick={() => history.fetchNextPage()}
+                disabled={history.isFetchingNextPage}
+              >
+                {history.isFetchingNextPage && (
+                  <LoaderCircle size={16} className="qw-spinner" />
+                )}
+                {m['qwen.play.history_more']()}
+              </button>
+            )}
+          </section>
+        )}
       </main>
       <footer className="qw-play-footer qw-wrap">
         <span>{m['qwen.play.footer']()}</span>
-        <Link href="/privacy-policy">{m['qwen.footer.privacy']()}</Link>
+        <span className="qw-pricing-footer-links">
+          <Link href="/privacy-policy">{m['qwen.footer.privacy']()}</Link>
+          <Link href="/terms-of-service">{m['qwen.footer.terms']()}</Link>
+          <Link href="/refund-policy">{m['qwen.footer.refund']()}</Link>
+        </span>
       </footer>
     </div>
   );
