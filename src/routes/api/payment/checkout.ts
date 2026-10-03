@@ -39,7 +39,7 @@ async function POST({ request }: { request: Request }) {
     }
 
     const body = await request.json().catch(() => ({}));
-    const { product_id, payment_provider, redirect } = body;
+    const { product_id, payment_provider, redirect, cancel } = body;
 
     if (!product_id || typeof product_id !== 'string') {
       return respErr('Missing product_id');
@@ -76,7 +76,7 @@ async function POST({ request }: { request: Request }) {
     // checkout is already signed in, and that page isn't part of this app.
     const finalRedirect = `${baseUrl}${safeRedirectPath}`;
     const successUrl = `${baseUrl}/api/payment/callback?redirect=${encodeURIComponent(finalRedirect)}`;
-    const cancelUrl = `${baseUrl}/pricing`;
+    const cancelUrl = `${baseUrl}${safeSameOriginPath(cancel, '/pricing', baseUrl)}`;
 
     const checkout = await createCheckout({
       userId: session.user.id,

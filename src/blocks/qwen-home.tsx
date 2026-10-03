@@ -14,6 +14,7 @@ import { useSession } from '@/core/auth/client';
 import { Link } from '@/core/i18n/navigation';
 import { envConfigs } from '@/config';
 import { m } from '@/paraglide/messages.js';
+import { localizeHref } from '@/paraglide/runtime.js';
 import { QwenPricing } from '@/blocks/qwen-pricing';
 import { BuiltWithShipAny } from '@/components/built-with-shipany';
 import { FooterBadgeList } from '@/components/footer-badge-list';
@@ -158,13 +159,13 @@ export function QwenHeader() {
           className={open ? 'qw-nav is-open' : 'qw-nav'}
           aria-label={m['qwen.nav.label']()}
         >
-          <a href="/#gallery" onClick={() => setOpen(false)}>
+          <a href={localizeHref('/#gallery')} onClick={() => setOpen(false)}>
             {m['qwen.nav.gallery']()}
           </a>
-          <a href="/#about" onClick={() => setOpen(false)}>
+          <a href={localizeHref('/#about')} onClick={() => setOpen(false)}>
             {m['qwen.nav.model']()}
           </a>
-          <a href="/#sources" onClick={() => setOpen(false)}>
+          <a href={localizeHref('/#sources')} onClick={() => setOpen(false)}>
             {m['qwen.nav.sources']()}
           </a>
           <Link href="/pricing" onClick={() => setOpen(false)}>
@@ -565,6 +566,7 @@ export function QwenHomePage() {
           <div>
             <Link href="/privacy-policy">{m['qwen.footer.privacy']()}</Link>
             <Link href="/terms-of-service">{m['qwen.footer.terms']()}</Link>
+            <Link href="/refund-policy">{m['qwen.footer.refund']()}</Link>
           </div>
         </div>
         <FooterBadgeList className="mt-6" />

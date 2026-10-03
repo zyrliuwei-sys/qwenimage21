@@ -19,6 +19,7 @@ export function Footer() {
       links: [
         { label: m['qwen.footer.privacy'](), href: '/privacy-policy' },
         { label: m['qwen.footer.terms'](), href: '/terms-of-service' },
+        { label: m['qwen.footer.refund'](), href: '/refund-policy' },
       ],
     },
   ];

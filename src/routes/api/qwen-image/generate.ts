@@ -22,7 +22,9 @@ import {
 import { getAllConfigs } from '@/modules/config/service';
 import { submitFalJob } from '@/modules/qwen-image/service';
 import { enforceMinIntervalRateLimit } from '@/lib/rate-limit';
-import { respData, respErr } from '@/lib/resp';
+import { pickLocale } from '@/lib/request-locale';
+import { respData, respErr, respJson } from '@/lib/resp';
+import { m } from '@/paraglide/messages.js';
 
 const DATA_URI = /^data:image\/(png|jpeg|webp);base64,([A-Za-z0-9+/]+={0,2})$/;
 
@@ -44,21 +46,23 @@ async function POST({ request }: { request: Request }) {
     const session = await getAuth().api.getSession({
       headers: request.headers,
     });
-    if (!session?.user) return respErr('Sign in to generate an image.');
+    const locale = pickLocale(new URL(request.url).searchParams.get('locale'));
+    if (!session?.user) {
+      return respErr(m['qwen.api.sign_in']({}, { locale }));
+    }
 
     const configs = await getAllConfigs();
     const apiKey = configs.fal_api_key?.trim();
     if (!apiKey) {
-      return respErr(
-        'Image generation is not configured yet. Add the Fal API key in Admin → Settings → AI.'
-      );
+      console.error('qwen-image: Fal API key is not configured');
+      return respErr(m['qwen.api.unavailable']({}, { locale }));
     }
 
     let body: Record<string, unknown>;
     try {
       body = await request.json();
     } catch {
-      return respErr('The request body must be valid JSON.');
+      return respErr(m['qwen.api.unexpected']({}, { locale }));
     }
 
     const mode: QwenImageMode = body.mode === 'edit' ? 'edit' : 'generate';
@@ -69,33 +73,39 @@ async function POST({ request }: { request: Request }) {
     const ratio = body.ratio as QwenImageRatio;
     const aspect = Number(body.aspect);
 
-    if (!prompt) return respErr('Enter a prompt before generating an image.');
+    if (!prompt) return respErr(m['qwen.play.prompt_required']({}, { locale }));
     if (prompt.length > 5000)
-      return respErr('Prompts must be 5,000 characters or fewer.');
+      return respErr(m['qwen.api.prompt_too_long']({}, { locale }));
     if (
       !Number.isInteger(numImages) ||
       numImages < 1 ||
       numImages > MAX_IMAGES_PER_REQUEST
     ) {
       return respErr(
-        `Choose between 1 and ${MAX_IMAGES_PER_REQUEST} images per request.`
+        m['qwen.api.count_range'](
+          { max: String(MAX_IMAGES_PER_REQUEST) },
+          { locale }
+        )
       );
     }
     const ratioOk =
       (QWEN_IMAGE_RATIOS as readonly string[]).includes(ratio) ||
       (mode === 'edit' && ratio === 'original');
-    if (!ratioOk) return respErr('Choose a supported image ratio.');
+    if (!ratioOk) return respErr(m['qwen.api.ratio_invalid']({}, { locale }));
 
     let imageUrls: string[] | undefined;
     if (mode === 'edit') {
       const images = Array.isArray(body.images) ? body.images : [];
       if (images.length < 1 || images.length > MAX_EDIT_INPUT_IMAGES) {
         return respErr(
-          `Upload 1 to ${MAX_EDIT_INPUT_IMAGES} reference images to edit.`
+          m['qwen.api.edit_images_count'](
+            { max: String(MAX_EDIT_INPUT_IMAGES) },
+            { locale }
+          )
         );
       }
       if (!images.every(validEditImage)) {
-        return respErr('Reference images must be PNG, JPG or WebP, 10 MB max.');
+        return respErr(m['qwen.api.edit_images_invalid']({}, { locale }));
       }
       imageUrls = images;
     }
@@ -115,8 +125,14 @@ async function POST({ request }: { request: Request }) {
       });
     } catch (error) {
       if (error instanceof Error && error.message === 'Insufficient credits') {
-        return respErr(
-          `Not enough credits. This request needs ${costCredits} credits.`
+        // `needCredits` lets the client offer a link to the pricing page.
+        return respJson(
+          -1,
+          m['qwen.play.not_enough_credits'](
+            { cost: String(costCredits) },
+            { locale }
+          ),
+          { needCredits: true }
         );
       }
       throw error;
@@ -143,15 +159,14 @@ async function POST({ request }: { request: Request }) {
           error: error instanceof Error ? error.message : 'submit failed',
         },
       });
-      return respErr(
-        'The image service could not start this request. Your credits were refunded.'
-      );
+      return respErr(m['qwen.api.submit_failed']({}, { locale }));
     }
 
     return respData({ taskId: task.id, costCredits });
   } catch (error) {
     console.error('qwen-image generate failed:', error);
-    return respErr('Image generation failed unexpectedly. Please try again.');
+    const locale = pickLocale(new URL(request.url).searchParams.get('locale'));
+    return respErr(m['qwen.api.unexpected']({}, { locale }));
   }
 }
 
