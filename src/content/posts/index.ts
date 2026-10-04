@@ -12,6 +12,7 @@ import { baseLocale } from '@/paraglide/runtime.js';
  * local posts via the pure helpers below.
  */
 export const BLOG_POST_SLUGS = [
+  'strata-qwen-local-inference',
   'write-a-visual-brief',
   'edit-with-a-reference',
 ] as const;

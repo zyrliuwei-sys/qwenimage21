@@ -1127,5 +1127,8 @@
   "admin.indexnow.urls_placeholder": "https://example.com/new-page",
   "admin.indexnow.submit_urls": "提交这些网址",
   "admin.indexnow.submitted": "已提交 {count} 个网址",
-  "admin.indexnow.result_count": "已发送 {count} 个网址"
+  "admin.indexnow.result_count": "已发送 {count} 个网址",
+  "qwen.blog.eyebrow": "博客",
+  "qwen.blog.heading": "关于 Qwen 模型与图像创作的笔记。",
+  "qwen.blog.view_all": "查看全部文章"
 }

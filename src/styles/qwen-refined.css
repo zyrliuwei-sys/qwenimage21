@@ -1067,6 +1067,7 @@
   background: var(--qw-mist);
 }
 .dark .qw-feature-grid article,
+.dark .qw-blog-card,
 .dark .qw-panel,
 .dark .qw-modal {
   background: #223229;

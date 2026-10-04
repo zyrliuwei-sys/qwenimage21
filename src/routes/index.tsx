@@ -4,9 +4,14 @@ import { envConfigs } from '@/config';
 import { m } from '@/paraglide/messages.js';
 import { getLocale, locales, localizeUrl } from '@/paraglide/runtime.js';
 import { QwenHomePage } from '@/blocks/qwen-home';
+import { getBlogPostsFn } from '@/content/posts/server';
 
 export const Route = createFileRoute('/')({
-  loader: () => ({ locale: getLocale() }),
+  loader: async () => {
+    const locale = getLocale();
+    const posts = await getBlogPostsFn({ data: { locale, limit: 3 } });
+    return { locale, posts };
+  },
   head: ({ loaderData }) => {
     const locale = loaderData?.locale ?? 'en';
     const title = m['common.metadata.title']({}, { locale: locale as any });
@@ -60,5 +65,10 @@ export const Route = createFileRoute('/')({
       ],
     };
   },
-  component: QwenHomePage,
+  component: HomePage,
 });
+
+function HomePage() {
+  const { posts } = Route.useLoaderData();
+  return <QwenHomePage posts={posts} />;
+}

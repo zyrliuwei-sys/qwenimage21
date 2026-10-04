@@ -1127,5 +1127,8 @@
   "admin.indexnow.urls_placeholder": "https://example.com/new-page",
   "admin.indexnow.submit_urls": "Submit these URLs",
   "admin.indexnow.submitted": "Submitted {count} URLs",
-  "admin.indexnow.result_count": "{count} URLs sent"
+  "admin.indexnow.result_count": "{count} URLs sent",
+  "qwen.blog.eyebrow": "FROM THE BLOG",
+  "qwen.blog.heading": "Notes on Qwen models and image making.",
+  "qwen.blog.view_all": "View all posts"
 }
