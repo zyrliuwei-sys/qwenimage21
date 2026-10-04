@@ -1,0 +1,80 @@
+export const meta = {
+  title: 'Strata and Qwen: running a 125B Qwen model on a gaming PC',
+  description:
+    'What the open-source Strata engine does, how it fits Qwen3.8-Flash-Next into 12 GB of VRAM, the speeds its authors report, and the trade-offs to know before you install it.',
+  created_at: '2026-10-04',
+  author_name: 'QwenImage AI Studio',
+  image: '/imgs/blog/strata-qwen-cover.png',
+};
+
+If you have seen "Strata Qwen" in your feed lately, it refers to **Strata**, an open-source inference engine published on GitHub as [Niko1221/Strata](https://github.com/Niko1221/Strata). Its pitch is simple: run **Qwen3.8-Flash-Next**, a 125-billion-parameter Mixture-of-Experts (MoE) language model, on an ordinary gaming PC, with a one-click installer and a local API.
+
+This note summarizes what the project says about itself, so you can decide whether it is worth the disk space. Strata is a text (and optional image-input) language model runtime. It is not related to the image generation in our studio, which is built on Qwen Image 2.1.
+
+## What Strata is
+
+According to its README, Strata is a local inference engine for Windows and Linux under the MIT license. The installer (`START-HERE.bat` on Windows, `./setup.sh` on Linux) detects your graphics card, recommends a model size, downloads the weights and starts a server at `http://127.0.0.1:8080`. From there you get:
+
+- a browser chat UI on localhost;
+- an **OpenAI-compatible API** at `/v1` and an **Anthropic-compatible** endpoint at `/v1/messages`;
+- an MCP server for coding assistants;
+- optional image input, a live GPU/CPU/RAM dashboard, adjustable reasoning effort and multi-GPU support.
+
+Besides the main model, the project lists a "Coder" variant with roughly half the experts, which lowers the RAM requirement.
+
+## How it fits a 125B model into 12 GB
+
+An MoE model only activates a small subset of its experts for each token, and Strata leans on that. The project's [technical notes](https://github.com/Niko1221/Strata/blob/main/docs/DETAILS.md) describe a three-tier layout:
+
+- **GPU** holds attention layers, the routers and an adaptive cache of frequently used experts. The notes say every extra GB of VRAM holds roughly 700 more experts.
+- **System RAM** holds the full set of quantized experts, and the CPU computes the experts that are not cached on the GPU, in parallel.
+- **SSD** stores the model files and an n-gram table used for speculative decoding.
+
+Two further tricks do much of the work. Experts are dequantized lazily and streamed to the GPU over PCIe in chunks, and the model's built-in multi-token-prediction layer drafts about 2.4 to 3.2 tokens per verification pass.
+
+## Reported speed
+
+<img
+  src="/imgs/blog/strata-qwen-speed.png"
+  alt="Bar chart of Strata output speed by quantization on an RTX 5070"
+  width={1200}
+  height={675}
+  loading="lazy"
+  className="border-border my-8 w-full rounded-2xl border"
+/>
+
+The chart above uses the figures published in the repository for an RTX 5070 (12 GB) with 64 GB of RAM at a 4K context:
+
+- **Q2_0** (about 66 GB): about 95 tokens/s, the fastest pack.
+- **IQ2_XS** (about 68 GB): about 78 tokens/s.
+- **IQ3_XXS** (about 76 GB): about 66 tokens/s, the highest fidelity of the three.
+
+Speed drops as context grows: the notes list about 56 tokens/s for Q2_0 at the full 262K context. An independent write-up on note.com measured similar results (about 93 tokens/s for Q2_0 at short context and about 74 tokens/s at 128K) on an RTX 5070 with a Ryzen 5 7600 and 64 GB of RAM. Treat all of these as best-case numbers for that class of machine; PCIe bandwidth, RAM speed and the CPU all matter.
+
+## What you need
+
+The project lists these requirements:
+
+- an NVIDIA RTX GPU with at least **12 GB of VRAM** (AMD Radeon RX 7900/9000 are also mentioned in the README);
+- **64 GB of RAM** recommended; the README gives 32 GB as a minimum, and the technical notes give 48 GB for the smaller packs;
+- **70 to 80 GB** of free SSD space;
+- a recent driver (the notes say NVIDIA 580+) and an x86-64 CPU with AVX2.
+
+## Trade-offs to keep in mind
+
+- **Quality.** These are 2- and 3-bit quantizations of a much larger model. The authors themselves acknowledge a quality gap relative to the official full-precision model; IQ3 packs narrow it at the cost of speed.
+- **One request at a time.** The server processes requests sequentially, so it is a personal tool rather than a shared endpoint.
+- **Slow first load.** The README warns that the PC may freeze for one to three minutes while the model loads, and a long first prompt takes roughly a minute per 30,000 tokens.
+- **Platform gaps.** Image input on AMD cards is Linux-only.
+
+## Our take
+
+Strata is a good example of how far MoE sparsity, expert caching and aggressive quantization can push local inference. If you have a 12 GB card, 64 GB of RAM and a spare 80 GB of SSD, it is a practical way to get a private, OpenAI-compatible endpoint backed by a very large Qwen model. Check the repository for the latest requirements before installing, since a fast-moving project can change quickly.
+
+If you are here for images rather than text, the [QwenImage AI studio](/playground) is where you can try Qwen Image 2.1 prompts.
+
+### Sources
+
+- [Strata on GitHub (README)](https://github.com/Niko1221/Strata)
+- [Strata technical details (docs/DETAILS.md)](https://github.com/Niko1221/Strata/blob/main/docs/DETAILS.md)
+- [npaka on note.com: overview of Strata](https://note.com/npaka/n/n4a1185074686?hl=en)

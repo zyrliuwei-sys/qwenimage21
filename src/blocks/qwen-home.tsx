@@ -14,11 +14,12 @@ import { useSession } from '@/core/auth/client';
 import { Link } from '@/core/i18n/navigation';
 import { envConfigs } from '@/config';
 import { m } from '@/paraglide/messages.js';
-import { localizeHref } from '@/paraglide/runtime.js';
+import { getLocale, localizeHref } from '@/paraglide/runtime.js';
 import { QwenPricing } from '@/blocks/qwen-pricing';
 import { BuiltWithShipAny } from '@/components/built-with-shipany';
 import { FooterBadgeList } from '@/components/footer-badge-list';
 import { SiteUserMenu } from '@/components/site-user-menu';
+import { formatPostDate, type BlogPost } from '@/content/posts';
 
 import '@/styles/qwen-site.css';
 import '@/styles/qwen-refined.css';
@@ -223,7 +224,48 @@ function ArtworkVisual({ image, title }: { image: string; title: string }) {
   );
 }
 
-export function QwenHomePage() {
+function QwenBlogSection({ posts }: { posts: BlogPost[] }) {
+  if (posts.length === 0) return null;
+  const locale = getLocale();
+  return (
+    <section id="blog" className="qw-blog qw-wrap">
+      <div className="qw-blog-head">
+        <div className="qw-section-head">
+          <p className="qw-eyebrow">{m['qwen.blog.eyebrow']()}</p>
+          <h2>{m['qwen.blog.heading']()}</h2>
+        </div>
+        <Link href="/blog" className="qw-blog-all">
+          {m['qwen.blog.view_all']()} <ArrowRight size={17} />
+        </Link>
+      </div>
+      <div className="qw-blog-grid">
+        {posts.map((post) => (
+          <Link
+            key={post.slug}
+            href={`/blog/${post.slug}`}
+            className="qw-blog-card"
+          >
+            {post.image && (
+              <img
+                src={post.image}
+                alt=""
+                width={1200}
+                height={675}
+                loading="lazy"
+                decoding="async"
+              />
+            )}
+            <small>{formatPostDate(post.createdAt, locale)}</small>
+            <strong>{post.title}</strong>
+            <p>{post.description}</p>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export function QwenHomePage({ posts = [] }: { posts?: BlogPost[] }) {
   const [category, setCategory] = useState<Category>('all');
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Artwork | null>(null);
@@ -550,6 +592,7 @@ export function QwenHomePage() {
             {m['qwen.closing.cta']()} <ArrowUpRight size={17} />
           </Link>
         </section>
+        <QwenBlogSection posts={posts} />
       </main>
       <footer className="qw-footer qw-wrap">
         <div className="qw-footer-top">
