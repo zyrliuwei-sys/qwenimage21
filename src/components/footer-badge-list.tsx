@@ -1,15 +1,23 @@
+import { getRouteApi } from '@tanstack/react-router';
 import { DEFAULT_FOOTER_BADGES } from '@/features/footer-badges/defaults';
 import { parseStoredFooterBadges } from '@/features/footer-badges/validation';
 
 import { cn } from '@/lib/utils';
 import { usePublicConfig } from '@/hooks/use-public-config';
 
+const rootRoute = getRouteApi('__root__');
+
 export function FooterBadgeList({ className }: { className?: string }) {
   const { data } = usePublicConfig();
+  // Server-rendered list from the root loader until the live config arrives.
+  const ssrStored = rootRoute.useLoaderData({
+    select: (d) => d.footerBadges,
+  });
+  const stored = data ? data.footer_badges : (ssrStored ?? undefined);
   const badges =
-    data?.footer_badges === undefined
+    stored === undefined
       ? DEFAULT_FOOTER_BADGES
-      : parseStoredFooterBadges(data.footer_badges);
+      : parseStoredFooterBadges(stored);
 
   if (badges.length === 0) return null;
 
