@@ -51,5 +51,15 @@
     "name": "Active CSS rejected",
     "html": "<a href=\"https://example.com\" style=\"background:url(https://evil.example)\">A</a>",
     "ok": false
+  },
+  {
+    "name": "Official image without alt",
+    "html": "<a href=\"https://example.com\"><img src=\"https://example.com/badge.svg\"></a>",
+    "ok": true
+  },
+  {
+    "name": "Text between 120 and 200 characters",
+    "html": "<a href=\"https://example.com\">Directory Directory Directory Directory Directory Directory Directory Directory Directory Directory Directory Directory Directory Directory Directory </a>",
+    "ok": true
   }
 ]

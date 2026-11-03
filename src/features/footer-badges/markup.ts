@@ -22,8 +22,6 @@ function metadata(element: Element, standard: string[]) {
   return badgeAttributes(extra);
 }
 
-/** Parse safe data, never render pasted HTML. Scripts, handlers, SVG and active CSS are rejected. */
-
 function dimension(element: Element | undefined, name: 'width' | 'height') {
   if (element?.hasAttribute(name)) return Number(element.getAttribute(name));
   const value = (element as HTMLElement | undefined)?.style?.[name];
@@ -32,6 +30,7 @@ function dimension(element: Element | undefined, name: 'width' | 'height') {
     : undefined;
 }
 
+/** Parse safe data, never render pasted HTML. Scripts, handlers, SVG and active CSS are rejected. */
 export function parseFooterBadgeMarkup(markup: string): FooterBadge[] {
   if (!markup.trim() || markup.length > 20_000)
     throw new Error('invalid_markup');
@@ -65,10 +64,11 @@ export function parseFooterBadgeMarkup(markup: string): FooterBadge[] {
         src: img?.getAttribute('src') ?? undefined,
         alt:
           img?.getAttribute('alt')?.trim() ||
-          text ||
+          text?.slice(0, 120) ||
           anchor.getAttribute('aria-label') ||
           anchor.getAttribute('title') ||
-          '',
+          img?.getAttribute('title') ||
+          new URL(anchor.getAttribute('href') || '').hostname,
         text,
         rel: anchor.getAttribute('rel') ?? undefined,
         attributes: metadata(anchor, ['href', 'target', 'rel']),
