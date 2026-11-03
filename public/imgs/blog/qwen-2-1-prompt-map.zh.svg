@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" role="img" aria-labelledby="title desc" xml:lang="zh">
+<title id="title">把提示词写成一份视觉简报。</title>
+<desc id="desc">六个明确的选择，让画面更容易描述，也更容易判断。</desc>
+<rect width="1200" height="800" fill="#f6f5f0"/>
+<g font-family="Manrope, PingFang SC, Microsoft YaHei, sans-serif" fill="#192a21">
+<text x="48" y="54" font-size="14" letter-spacing="2">QWEN 2.1 PROMPT GUIDE</text>
+<text x="48" y="122" font-size="44" font-family="Georgia, Songti SC, serif">把提示词写成一份视觉简报。</text>
+<text x="48" y="163" font-size="21" fill="#56665a">六个明确的选择，让画面更容易描述，也更容易判断。</text>
+<g transform="translate(48 210)">
+<rect width="352" height="200" rx="10" fill="#fbfbf7" stroke="#cfd7ca"/>
+<rect x="24" y="26" width="32" height="4" rx="2" fill="#d66e4d"/>
+<text x="308" y="38" font-size="14" fill="#56665a">01</text>
+<text x="24" y="77" font-size="28" font-weight="600">主体</text>
+<text x="24" y="121" font-size="20">一只米白色陶瓷杯</text>
+<text x="24" y="165" font-size="16" fill="#56665a">数量与动作</text>
+</g>
+<g transform="translate(424 210)">
+<rect width="352" height="200" rx="10" fill="#fbfbf7" stroke="#cfd7ca"/>
+<rect x="24" y="26" width="32" height="4" rx="2" fill="#d66e4d"/>
+<text x="308" y="38" font-size="14" fill="#56665a">02</text>
+<text x="24" y="77" font-size="28" font-weight="600">场景</text>
+<text x="24" y="121" font-size="20">放在浅色石桌面上</text>
+<text x="24" y="165" font-size="16" fill="#56665a">环境与承托表面</text>
+</g>
+<g transform="translate(800 210)">
+<rect width="352" height="200" rx="10" fill="#fbfbf7" stroke="#cfd7ca"/>
+<rect x="24" y="26" width="32" height="4" rx="2" fill="#d66e4d"/>
+<text x="308" y="38" font-size="14" fill="#56665a">03</text>
+<text x="24" y="77" font-size="28" font-weight="600">构图</text>
+<text x="24" y="121" font-size="20">主体靠左，右侧留白</text>
+<text x="24" y="165" font-size="16" fill="#56665a">视角与位置</text>
+</g>
+<g transform="translate(48 434)">
+<rect width="352" height="200" rx="10" fill="#fbfbf7" stroke="#cfd7ca"/>
+<rect x="24" y="26" width="32" height="4" rx="2" fill="#d66e4d"/>
+<text x="308" y="38" font-size="14" fill="#56665a">04</text>
+<text x="24" y="77" font-size="28" font-weight="600">光线</text>
+<text x="24" y="121" font-size="20">柔和日光从左侧照入</text>
+<text x="24" y="165" font-size="16" fill="#56665a">方向与阴影</text>
+</g>
+<g transform="translate(424 434)">
+<rect width="352" height="200" rx="10" fill="#fbfbf7" stroke="#cfd7ca"/>
+<rect x="24" y="26" width="32" height="4" rx="2" fill="#d66e4d"/>
+<text x="308" y="38" font-size="14" fill="#56665a">05</text>
+<text x="24" y="77" font-size="28" font-weight="600">材质</text>
+<text x="24" y="121" font-size="20">手工哑光釉面</text>
+<text x="24" y="165" font-size="16" fill="#56665a">纹理与表面质感</text>
+</g>
+<g transform="translate(800 434)">
+<rect width="352" height="200" rx="10" fill="#fbfbf7" stroke="#cfd7ca"/>
+<rect x="24" y="26" width="32" height="4" rx="2" fill="#d66e4d"/>
+<text x="308" y="38" font-size="14" fill="#56665a">06</text>
+<text x="24" y="77" font-size="28" font-weight="600">约束</text>
+<text x="24" y="121" font-size="20">没有文字或额外道具</text>
+<text x="24" y="165" font-size="16" fill="#56665a">准确文案与修改边界</text>
+</g>
+<path d="M48 710H1152" stroke="#cfd7ca"/>
+<text x="48" y="754" font-size="20" fill="#56665a">文字描述可见画面，输出尺寸在生成工具中设置。</text>
+</g></svg>

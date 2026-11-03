@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+<title id="title">Qwen-Image-2.1-Turbo</title>
+<desc id="desc">Editorial cover showing eight denoising steps as eight numbered dots. It does not show measured performance or model outputs.</desc>
+<rect width="1200" height="675" fill="#192a21"/>
+<g font-family="Manrope, PingFang SC, sans-serif" fill="#f6f5f0">
+<text x="64" y="78" font-size="16" letter-spacing="3" fill="#c3d2c0">MODEL NOTES / 2.1</text>
+<text x="64" y="184" font-size="61" font-family="Georgia, serif">Qwen-Image-2.1-Turbo</text>
+<text x="64" y="242" font-size="27" fill="#d3dfd0">Eight denoising steps. A shorter iteration loop.</text>
+<path d="M100 406H1100" stroke="#82977e" stroke-width="2"/>
+<circle cx="100.00" cy="406" r="30" fill="#f6f5f0"/>
+<text x="100.00" y="414" font-size="23" text-anchor="middle" fill="#192a21">1</text>
+<circle cx="242.86" cy="406" r="30" fill="#f6f5f0"/>
+<text x="242.86" y="414" font-size="23" text-anchor="middle" fill="#192a21">2</text>
+<circle cx="385.71" cy="406" r="30" fill="#f6f5f0"/>
+<text x="385.71" y="414" font-size="23" text-anchor="middle" fill="#192a21">3</text>
+<circle cx="528.57" cy="406" r="30" fill="#f6f5f0"/>
+<text x="528.57" y="414" font-size="23" text-anchor="middle" fill="#192a21">4</text>
+<circle cx="671.43" cy="406" r="30" fill="#f6f5f0"/>
+<text x="671.43" y="414" font-size="23" text-anchor="middle" fill="#192a21">5</text>
+<circle cx="814.29" cy="406" r="30" fill="#f6f5f0"/>
+<text x="814.29" y="414" font-size="23" text-anchor="middle" fill="#192a21">6</text>
+<circle cx="957.14" cy="406" r="30" fill="#f6f5f0"/>
+<text x="957.14" y="414" font-size="23" text-anchor="middle" fill="#192a21">7</text>
+<circle cx="1100.00" cy="406" r="30" fill="#d66e4d"/>
+<text x="1100.00" y="414" font-size="23" text-anchor="middle" fill="#192a21">8</text>
+<text x="64" y="555" font-size="21" fill="#d3dfd0">Text-to-image + image editing</text>
+<path d="M64 584H1136" stroke="#4b6451"/>
+<text x="64" y="624" font-size="15" fill="#c3d2c0">A sampling concept diagram — not a speed benchmark.</text>
+</g></svg>

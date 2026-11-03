@@ -12,6 +12,8 @@ import { baseLocale } from '@/paraglide/runtime.js';
  * local posts via the pure helpers below.
  */
 export const BLOG_POST_SLUGS = [
+  'qwen-2-1-prompt-guide',
+  'qwen-image-2-1-turbo',
   'strata-qwen-local-inference',
   'write-a-visual-brief',
   'edit-with-a-reference',

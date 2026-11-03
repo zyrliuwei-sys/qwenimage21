@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" role="img" aria-labelledby="title desc" xml:lang="en">
+<title id="title">A prompt is a visual brief.</title>
+<desc id="desc">Six decisions that make an image easier to describe and assess.</desc>
+<rect width="1200" height="800" fill="#f6f5f0"/>
+<g font-family="Manrope, PingFang SC, Microsoft YaHei, sans-serif" fill="#192a21">
+<text x="48" y="54" font-size="14" letter-spacing="2">QWEN 2.1 PROMPT GUIDE</text>
+<text x="48" y="122" font-size="44" font-family="Georgia, Songti SC, serif">A prompt is a visual brief.</text>
+<text x="48" y="163" font-size="21" fill="#56665a">Six decisions that make an image easier to describe and assess.</text>
+<g transform="translate(48 210)">
+<rect width="352" height="200" rx="10" fill="#fbfbf7" stroke="#cfd7ca"/>
+<rect x="24" y="26" width="32" height="4" rx="2" fill="#d66e4d"/>
+<text x="308" y="38" font-size="14" fill="#56665a">01</text>
+<text x="24" y="77" font-size="28" font-weight="600">Subject</text>
+<text x="24" y="121" font-size="20">One ivory ceramic cup</text>
+<text x="24" y="165" font-size="16" fill="#56665a">Count + action</text>
+</g>
+<g transform="translate(424 210)">
+<rect width="352" height="200" rx="10" fill="#fbfbf7" stroke="#cfd7ca"/>
+<rect x="24" y="26" width="32" height="4" rx="2" fill="#d66e4d"/>
+<text x="308" y="38" font-size="14" fill="#56665a">02</text>
+<text x="24" y="77" font-size="28" font-weight="600">Setting</text>
+<text x="24" y="121" font-size="20">On a pale stone tabletop</text>
+<text x="24" y="165" font-size="16" fill="#56665a">Environment + surface</text>
+</g>
+<g transform="translate(800 210)">
+<rect width="352" height="200" rx="10" fill="#fbfbf7" stroke="#cfd7ca"/>
+<rect x="24" y="26" width="32" height="4" rx="2" fill="#d66e4d"/>
+<text x="308" y="38" font-size="14" fill="#56665a">03</text>
+<text x="24" y="77" font-size="28" font-weight="600">Composition</text>
+<text x="24" y="121" font-size="20">Left third, room on the right</text>
+<text x="24" y="165" font-size="16" fill="#56665a">Viewpoint + placement</text>
+</g>
+<g transform="translate(48 434)">
+<rect width="352" height="200" rx="10" fill="#fbfbf7" stroke="#cfd7ca"/>
+<rect x="24" y="26" width="32" height="4" rx="2" fill="#d66e4d"/>
+<text x="308" y="38" font-size="14" fill="#56665a">04</text>
+<text x="24" y="77" font-size="28" font-weight="600">Light</text>
+<text x="24" y="121" font-size="20">Soft daylight from the left</text>
+<text x="24" y="165" font-size="16" fill="#56665a">Direction + shadow</text>
+</g>
+<g transform="translate(424 434)">
+<rect width="352" height="200" rx="10" fill="#fbfbf7" stroke="#cfd7ca"/>
+<rect x="24" y="26" width="32" height="4" rx="2" fill="#d66e4d"/>
+<text x="308" y="38" font-size="14" fill="#56665a">05</text>
+<text x="24" y="77" font-size="28" font-weight="600">Material</text>
+<text x="24" y="121" font-size="20">Handmade matte glaze</text>
+<text x="24" y="165" font-size="16" fill="#56665a">Texture + finish</text>
+</g>
+<g transform="translate(800 434)">
+<rect width="352" height="200" rx="10" fill="#fbfbf7" stroke="#cfd7ca"/>
+<rect x="24" y="26" width="32" height="4" rx="2" fill="#d66e4d"/>
+<text x="308" y="38" font-size="14" fill="#56665a">06</text>
+<text x="24" y="77" font-size="28" font-weight="600">Constraints</text>
+<text x="24" y="121" font-size="20">No lettering or extra props</text>
+<text x="24" y="165" font-size="16" fill="#56665a">Exact copy + boundaries</text>
+</g>
+<path d="M48 710H1152" stroke="#cfd7ca"/>
+<text x="48" y="754" font-size="20" fill="#56665a">Describe the visible scene. Set dimensions in the generation tool.</text>
+</g></svg>

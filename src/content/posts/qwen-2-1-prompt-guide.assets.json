@@ -1,0 +1,24 @@
+{
+  "purpose": "Editorial assets for the Qwen 2.1 prompt guide. These are not Qwen model benchmark outputs.",
+  "generated_with": "Built-in imagegen tool; copied into the project as optimized WebP files.",
+  "assets": [
+    {
+      "path": "public/imgs/blog/qwen-2-1-prompt-guide-cover.webp",
+      "source": "/Users/wl./.codex/generated_images/01a1a110-fea2-74c3-9b14-350c5f3e04da/exec-e69da1de-0d4c-4583-9606-635f9a7f83a9.png",
+      "prompt": "Use case: photorealistic-natural. Asset type: wide editorial blog cover, 16:9 landscape, about writing clear prompts for AI image generation. Primary request: a refined still life of one handmade ivory ceramic cup on a pale limestone plinth, a single folded cream paper sheet and a small dark forest-green color swatch lying on the table nearby. Natural irregular ceramic glaze, tangible stone grain. Soft morning window light from upper left, restrained contact shadows, warm off-white background, muted forest-green accent, quiet contemporary design magazine photography. Composition: all objects fully visible, cup positioned just left of center, generous breathing room and negative space to the right, slightly elevated three-quarter camera angle. It must look like an editorial illustration of a visual brief, not a software screenshot. No text, no letters, no numbers, no logos, no watermark, no diagrams."
+    },
+    {
+      "path": "public/imgs/blog/qwen-2-1-background-edit.webp",
+      "source": "/Users/wl./.codex/generated_images/01a1a110-fea2-74c3-9b14-350c5f3e04da/exec-b8ece16f-ee4e-4119-acac-86d263fdb927.png",
+      "prompt": "Use case: product-mockup. Asset type: editorial teaching illustration for an AI image editing prompt guide, a wide 16:9 landscape diptych with two equal photographic panels separated by a narrow off-white gutter. Show the same plain ivory handmade ceramic cup with one curved handle, centered at the same scale and same three-quarter angle in each panel. LEFT panel: cup on a pale warm-gray stone tabletop against a pale warm-gray studio wall, soft directional daylight from the left. RIGHT panel: same cup, unchanged shape and ivory glaze and handle, same tabletop and camera angle and left daylight, with only the background wall changed to muted forest green. Physically plausible soft contact shadow, high-quality minimal product photography, warm ivory and forest-green editorial palette. The purpose is to illustrate a narrowly scoped background-edit instruction; this is a conceptual illustration, not a benchmark or real software result. No text, no labels, no arrows, no logos, no watermark."
+    },
+    {
+      "paths": [
+        "public/imgs/blog/qwen-2-1-prompt-map.en.svg",
+        "public/imgs/blog/qwen-2-1-prompt-map.zh.svg"
+      ],
+      "created_with": "Native SVG",
+      "brief": "A bilingual six-part checklist: subject, setting, composition, light, material, constraints. Text labels and examples are editable source, not AI-rendered lettering."
+    }
+  ]
+}
