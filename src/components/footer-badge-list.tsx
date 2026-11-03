@@ -4,6 +4,7 @@ import { parseStoredFooterBadges } from '@/features/footer-badges/validation';
 
 import { cn } from '@/lib/utils';
 import { usePublicConfig } from '@/hooks/use-public-config';
+import { FooterBadgeLink } from '@/components/footer-badge-link';
 
 const rootRoute = getRouteApi('__root__');
 
@@ -30,20 +31,12 @@ export function FooterBadgeList({ className }: { className?: string }) {
     >
       {badges.map((badge) => (
         <li key={`${copy}:${badge.href}:${badge.src}`} className="shrink-0">
-          <a
-            href={badge.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            tabIndex={copy > 0 ? -1 : undefined}
+          <FooterBadgeLink
+            badge={badge}
+            hidden={copy > 0}
             className="flex h-12 items-center transition-opacity hover:opacity-80"
-          >
-            <img
-              src={badge.src}
-              alt={badge.alt}
-              loading="lazy"
-              className="h-full w-auto max-w-[260px] object-contain"
-            />
-          </a>
+            imageClassName="h-full w-auto max-w-[260px] object-contain"
+          />
         </li>
       ))}
     </ul>

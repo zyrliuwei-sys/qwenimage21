@@ -155,13 +155,17 @@ function AdminFooterBadgesPage() {
                 >
                   <div className="min-w-0 space-y-2">
                     <div className="flex min-h-12 items-center">
-                      <img
-                        src={badge.src}
-                        alt={badge.alt}
-                        width={badge.width ?? 250}
-                        height={badge.height}
-                        className="h-auto max-h-16 max-w-full"
-                      />
+                      {badge.src ? (
+                        <img
+                          src={badge.src}
+                          alt={badge.alt}
+                          width={badge.width ?? 250}
+                          height={badge.height}
+                          className="h-auto max-h-16 max-w-full"
+                        />
+                      ) : (
+                        <span>{badge.text || badge.alt}</span>
+                      )}
                     </div>
                     <p className="text-muted-foreground truncate text-xs">
                       {badge.href}
