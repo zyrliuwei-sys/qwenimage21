@@ -11,6 +11,7 @@ const STATIC_PATHS = [
   '/qwen-image-edit',
   '/qwen-image-generator',
   '/qwen-image',
+  '/qwen-image-3-0',
   '/blog',
   '/privacy-policy',
   '/terms-of-service',

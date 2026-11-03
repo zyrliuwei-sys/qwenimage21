@@ -109,11 +109,16 @@ async function prepareReference(file: File): Promise<RefImage> {
   }
 }
 
-export function QwenPlaygroundPage() {
+export function QwenImageGenerator({
+  embedded = false,
+  returnTo = '/playground',
+}: {
+  embedded?: boolean;
+  returnTo?: '/playground' | '/qwen-image-3-0';
+}) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { data: session } = useSession();
-  const signedIn = !!session?.user;
 
   const [mode, setMode] = useState<Mode>('generate');
   const [prompt, setPrompt] = useState('');
@@ -131,6 +136,8 @@ export function QwenPlaygroundPage() {
   // Restore the draft once, then keep it in sync. `draftReady` is state, not
   // a ref, so the first save waits for the render carrying the restored values.
   const [draftReady, setDraftReady] = useState(false);
+  // Also keep session-dependent content stable during SSR hydration.
+  const signedIn = draftReady && !!session?.user;
   useEffect(() => {
     const draft = readDraft();
     if (draft) {
@@ -293,7 +300,9 @@ export function QwenPlaygroundPage() {
 
   const generate = () => {
     if (!signedIn) {
-      router.push(`/sign-in?callbackUrl=${encodeURIComponent('/playground')}`);
+      router.push(
+        `/sign-in?callbackUrl=${encodeURIComponent(localizeHref(returnTo))}`
+      );
       return;
     }
     if (!prompt.trim()) {
@@ -329,50 +338,61 @@ export function QwenPlaygroundPage() {
           m['qwen.play.sample_three'](),
         ]
       : [m['qwen.play.sample_edit_one'](), m['qwen.play.sample_edit_two']()];
+  const Content = embedded ? 'div' : 'main';
 
   return (
-    <div className="qw-site qw-playground">
-      <header className="qw-play-head qw-wrap">
-        <Link href="/" className="qw-brand">
-          <img
-            src={envConfigs.app_logo}
-            alt={m['qwen.logo_alt']({ name: envConfigs.app_name })}
-            width="30"
-            height="30"
-          />
-          <span>{envConfigs.app_name}</span>
-        </Link>
-        <div className="qw-play-head-actions">
-          {signedIn && balance !== undefined && (
-            <Link href="/pricing" className="qw-credit-pill">
-              <Sparkles size={14} />
-              {m['qwen.play.balance']({ credits: String(balance) })}
-            </Link>
-          )}
-          <Link href="/pricing">{m['qwen.nav.pricing']()}</Link>
-          <Link href="/">
-            <ArrowLeft size={16} />
-            {m['qwen.play.back']()}
-          </Link>
-          {session?.user ? (
-            <SiteUserMenu
-              name={session.user.name || 'User'}
-              email={session.user.email}
-              image={session.user.image}
+    <div
+      className={embedded ? 'qw-generator-embedded' : 'qw-site qw-playground'}
+    >
+      {!embedded && (
+        <header className="qw-play-head qw-wrap">
+          <Link href="/" className="qw-brand">
+            <img
+              src={envConfigs.app_logo}
+              alt={m['qwen.logo_alt']({ name: envConfigs.app_name })}
+              width="30"
+              height="30"
             />
-          ) : (
-            <a href={localizeHref('/sign-in?callbackUrl=%2Fplayground')}>
-              {m['common.nav.sign_in']()}
-            </a>
-          )}
-        </div>
-      </header>
-      <main className="qw-wrap">
-        <div className="qw-play-intro">
-          <p className="qw-eyebrow">{m['qwen.play.eyebrow']()}</p>
-          <h1>{m['qwen.play.heading']()}</h1>
-          <p>{m['qwen.play.description']()}</p>
-        </div>
+            <span>{envConfigs.app_name}</span>
+          </Link>
+          <div className="qw-play-head-actions">
+            {signedIn && balance !== undefined && (
+              <Link href="/pricing" className="qw-credit-pill">
+                <Sparkles size={14} />
+                {m['qwen.play.balance']({ credits: String(balance) })}
+              </Link>
+            )}
+            <Link href="/pricing">{m['qwen.nav.pricing']()}</Link>
+            <Link href="/">
+              <ArrowLeft size={16} />
+              {m['qwen.play.back']()}
+            </Link>
+            {signedIn && session?.user ? (
+              <SiteUserMenu
+                name={session.user.name || 'User'}
+                email={session.user.email}
+                image={session.user.image}
+              />
+            ) : (
+              <a
+                href={localizeHref(
+                  `/sign-in?callbackUrl=${encodeURIComponent(localizeHref(returnTo))}`
+                )}
+              >
+                {m['common.nav.sign_in']()}
+              </a>
+            )}
+          </div>
+        </header>
+      )}
+      <Content className={embedded ? undefined : 'qw-wrap'}>
+        {!embedded && (
+          <div className="qw-play-intro">
+            <p className="qw-eyebrow">{m['qwen.play.eyebrow']()}</p>
+            <h1>{m['qwen.play.heading']()}</h1>
+            <p>{m['qwen.play.description']()}</p>
+          </div>
+        )}
         <div className="qw-play-grid">
           <section className="qw-panel">
             <div className="qw-panel-top">
@@ -725,15 +745,21 @@ export function QwenPlaygroundPage() {
             )}
           </section>
         )}
-      </main>
-      <footer className="qw-play-footer qw-wrap">
-        <span>{m['qwen.play.footer']()}</span>
-        <span className="qw-pricing-footer-links">
-          <Link href="/privacy-policy">{m['qwen.footer.privacy']()}</Link>
-          <Link href="/terms-of-service">{m['qwen.footer.terms']()}</Link>
-          <Link href="/refund-policy">{m['qwen.footer.refund']()}</Link>
-        </span>
-      </footer>
+      </Content>
+      {!embedded && (
+        <footer className="qw-play-footer qw-wrap">
+          <span>{m['qwen.play.footer']()}</span>
+          <span className="qw-pricing-footer-links">
+            <Link href="/privacy-policy">{m['qwen.footer.privacy']()}</Link>
+            <Link href="/terms-of-service">{m['qwen.footer.terms']()}</Link>
+            <Link href="/refund-policy">{m['qwen.footer.refund']()}</Link>
+          </span>
+        </footer>
+      )}
     </div>
   );
+}
+
+export function QwenPlaygroundPage() {
+  return <QwenImageGenerator />;
 }

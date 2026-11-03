@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ArrowRight,
   ArrowUpRight,
@@ -142,8 +142,13 @@ const guideQuestions = [
 
 export function QwenHeader() {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { data: session, isPending } = useSession();
-  const user = session?.user;
+  // Auth can resolve before hydration. Keep the first client render identical
+  // to the server's header, then show the resolved account controls.
+  useEffect(() => setMounted(true), []);
+  const user = mounted ? session?.user : undefined;
+  const authReady = mounted && !isPending;
   return (
     <header className="qw-header">
       <div className="qw-header-inner">
@@ -166,13 +171,16 @@ export function QwenHeader() {
           <a href={localizeHref('/#about')} onClick={() => setOpen(false)}>
             {m['qwen.nav.model']()}
           </a>
+          <Link href="/qwen-image-3-0" onClick={() => setOpen(false)}>
+            {m['qwen.image3.nav']()}
+          </Link>
           <a href={localizeHref('/#sources')} onClick={() => setOpen(false)}>
             {m['qwen.nav.sources']()}
           </a>
           <Link href="/pricing" onClick={() => setOpen(false)}>
             {m['qwen.nav.pricing']()}
           </Link>
-          {!user && !isPending && (
+          {!user && authReady && (
             <Link
               className="qw-nav-signin"
               href="/sign-in"
@@ -190,7 +198,7 @@ export function QwenHeader() {
               image={user.image}
             />
           ) : (
-            !isPending && (
+            authReady && (
               <Link className="qw-signin-link" href="/sign-in">
                 {m['common.nav.sign_in']()}
               </Link>

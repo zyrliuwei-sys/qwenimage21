@@ -15,6 +15,12 @@ const STATIC_PAGES: { path: string; title: string; description: string }[] = [
     description: 'Prepare image generation and editing prompts',
   },
   {
+    path: '/qwen-image-3-0',
+    title: 'Qwen Image 3.0 Generator',
+    description:
+      'Text-to-image generation, reference image editing, a practical guide, and FAQ',
+  },
+  {
     path: '/privacy-policy',
     title: 'Privacy Policy',
     description: 'Privacy information',
